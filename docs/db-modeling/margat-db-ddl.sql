@@ -28,7 +28,7 @@ CREATE TABLE members (
   folling       INTEGER      NULL     DEFAULT 0, -- 팔로잉
   email_key     VARCHAR(255) NULL,     -- 인증키
   mem_state     INTEGER      NULL     DEFAULT 0, -- 회원상태
-  mem_grade     INTEGER      NULL      -- 회원등급
+  mem_grade     INTEGER      NULL     DEFAULT 0 -- 회원등급
 );
 
 -- 회원
