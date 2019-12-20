@@ -23,33 +23,59 @@ class MainActivity : AppCompatActivity() {
         signin_button.setOnClickListener {
             var member = Member(email_input.text.toString(), password_input.text.toString())
             var service = RetrofitAPI().creater.create(MemberService::class.java)
+            checkEmailOf(member, service)
+        }
 
-            service.findMemberByEmailAndPassword(member).enqueue(object: Callback<Array<Member>> {
-                override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
-                    Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
-                    if (response.code() == 200) {
-                        if (response.body().isNullOrEmpty()) {
-                            Toast.makeText(applicationContext, "로그인 실패: 비밀번호가 틀립니다!", Toast.LENGTH_SHORT).show()
-                            return
-                        }
-
-                        var name: String = response.body()!![0].name
-                        Toast.makeText(applicationContext, name+"님 환영합니다!", Toast.LENGTH_SHORT).show()
-
-                        val intent = Intent(applicationContext, LandingActivity::class.java)
-                        intent.putExtra("name", name)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    }
-                }
-            })
-
+        signUpText.setOnClickListener{
+            val intent = Intent(applicationContext, RegistrationActivity::class.java)
+            startActivity(intent)
         }
 
     }
 
+    private fun checkEmailOf(member: Member, service: MemberService) {
+        service.findMemberByEmail(member).enqueue(object: Callback<Array<Member>> {
+            override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
+                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+                if (response.code() == 200) {
+                    if (response.body().isNullOrEmpty()) {
+                        Toast.makeText(applicationContext,
+                            "로그인 실패: 이메일 틀립니다!", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+                    checkEmailAndPasswordOf(member, service)
+                }
+            }
+        })
+    }
+    private fun checkEmailAndPasswordOf(member: Member, service: MemberService) {
+        service.findMemberByEmailAndPassword(member).enqueue(object: Callback<Array<Member>> {
+            override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
+                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+                if (response.code() == 200) {
+                    if (response.body().isNullOrEmpty()) {
+                        Toast.makeText(applicationContext,
+                            "로그인 실패: 비밀번호가 틀립니다!", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
+                    var name: String = response.body()!![0].name
+                    Toast.makeText(applicationContext,
+                        "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(applicationContext, LandingActivity::class.java)
+                    intent.putExtra("name", name)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+            }
+        })
+    }
 }

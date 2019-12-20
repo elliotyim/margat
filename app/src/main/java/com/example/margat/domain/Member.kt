@@ -10,6 +10,13 @@ class Member {
 
     constructor()
 
+    constructor(_name: String, _password: String, _email: String, _tel: String) {
+        name = _name
+        password = _password
+        email = _email
+        tel = _tel
+    }
+
     constructor(_email: String, _password: String) {
         email = _email
         password = _password
