@@ -5,27 +5,20 @@ const mysqlDB = require('../mysql_config/mysql-db');
 
 mysqlDB.connect();
 
-router.get('/member-test', (req, res) => {
-  mysqlDB.query('select * from members', (err, rows, fields) =>{
-    if(!err) {
-      console.log('rows:' + rows);
-      console.log('fileds: ' + fields);
-      res.send(rows);
-    } else {
-      console.log('query error: ' + err);
-      res.send(err);
-    }
-  });
-});
+router.post('/member/email/password', (req, res) => {
 
-router.get('/member-test2', (req,res) => {
-  mysqlDB.query('select * from members where mem_no=?',[1], (err, rows, fields) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      res.send(err);
-    }
+  let email = req.body.email;
+  let password = req.body.password;
+  let result = {};
+
+  mysqlDB.query(
+    'select * from members where email=? and pwd=password(?)',
+    [email, password],
+    (err, rows, fields) => {
+      if (err) {res.send(err)}
+      else if (rows) {res.send(rows)}
   });
-})
+
+});
 
 module.exports = router;
