@@ -1,6 +1,7 @@
 package com.example.margat
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        checkIfAutoLoginSet()
 
         signin_button.setOnClickListener {
             var member = Member(email_input.text.toString(), password_input.text.toString())
@@ -65,6 +68,9 @@ class MainActivity : AppCompatActivity() {
                         return
                     }
 
+                    if(rememberMe.isChecked)
+                        setAutoLogin(member)
+
                     var name: String = response.body()!![0].name
                     Toast.makeText(applicationContext,
                         "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
@@ -78,4 +84,25 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun checkIfAutoLoginSet() {
+        var info: SharedPreferences = getSharedPreferences("setting", 0)
+        var editor: SharedPreferences.Editor = info.edit()
+
+        if (!info.getString("password", "").equals("")) {
+            println("자동로그인이 되어있음")
+            var member = Member(info.getString("email", "")!!, info.getString("password", "")!!)
+            var service = RetrofitAPI().creater.create(MemberService::class.java)
+            checkEmailAndPasswordOf(member, service)
+        }
+    }
+
+    private fun setAutoLogin(member: Member) {
+        var info: SharedPreferences = getSharedPreferences("setting", 0)
+        var editor: SharedPreferences.Editor = info.edit()
+        editor.putString("email", member.email)
+        editor.putString("password", member.password)
+        editor.commit()
+    }
+
 }
