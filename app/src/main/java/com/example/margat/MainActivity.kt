@@ -1,12 +1,55 @@
 package com.example.margat
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.margat.domain.Member
+import com.example.margat.service.MemberService
+import com.example.margat.util.RetrofitAPI
+import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class MainActivity : AppCompatActivity() {
+    val tag = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        signin_button.setOnClickListener {
+            var member = Member(email_input.text.toString(), password_input.text.toString())
+            var service = RetrofitAPI().creater.create(MemberService::class.java)
+
+            service.findMemberByEmailAndPassword(member).enqueue(object: Callback<Array<Member>> {
+                override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
+                    Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+                    if (response.code() == 200) {
+                        if (response.body().isNullOrEmpty()) {
+                            Toast.makeText(applicationContext, "로그인 실패: 비밀번호가 틀립니다!", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+
+                        var name: String = response.body()!![0].name
+                        Toast.makeText(applicationContext, name+"님 환영합니다!", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(applicationContext, LandingActivity::class.java)
+                        intent.putExtra("name", name)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    }
+                }
+            })
+
+        }
+
     }
+
 }
