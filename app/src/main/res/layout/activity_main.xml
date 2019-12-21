@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/password-input" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/forgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forgot your password?"

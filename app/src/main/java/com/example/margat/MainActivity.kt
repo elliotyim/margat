@@ -23,6 +23,11 @@ class MainActivity : AppCompatActivity() {
 
         checkIfAutoLoginSet()
 
+        forgotPassword.setOnClickListener{
+            val intent = Intent(applicationContext, FindPasswordActivity::class.java)
+            startActivity(intent)
+        }
+
         signin_button.setOnClickListener {
             var member = Member(email_input.text.toString(), password_input.text.toString())
             var service = RetrofitAPI().creater.create(MemberService::class.java)
