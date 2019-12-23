@@ -1,9 +1,10 @@
-package com.example.margat
+package com.example.margat.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.margat.R
 import com.example.margat.domain.Member
 import com.example.margat.service.MemberService
 import com.example.margat.util.RetrofitAPI
@@ -38,7 +39,7 @@ class RegistrationActivity : AppCompatActivity() {
                     if (response.code() == 200) {
                         Toast.makeText(applicationContext, "회원가입이 완료되었습니다!", Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        val intent = Intent(applicationContext, LoginActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)

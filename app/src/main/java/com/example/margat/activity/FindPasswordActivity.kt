@@ -1,8 +1,9 @@
-package com.example.margat
+package com.example.margat.activity
 
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.margat.R
 import com.example.margat.domain.Member
 import com.example.margat.service.MemberService
 import com.example.margat.util.RetrofitAPI

@@ -1,10 +1,12 @@
-package com.example.margat
+package com.example.margat.activity
 
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.margat.R
+import com.example.margat.Test2Activity
 import com.example.margat.domain.Member
 import com.example.margat.service.MemberService
 import com.example.margat.util.RetrofitAPI
@@ -14,7 +16,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class MainActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     val tag = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +38,11 @@ class MainActivity : AppCompatActivity() {
 
         signUpText.setOnClickListener{
             val intent = Intent(applicationContext, RegistrationActivity::class.java)
+            startActivity(intent)
+        }
+
+        temp.setOnClickListener{
+            val intent = Intent(applicationContext, Test2Activity::class.java)
             startActivity(intent)
         }
 
@@ -80,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext,
                         "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
 
-                    val intent = Intent(applicationContext, LandingActivity::class.java)
+                    val intent = Intent(applicationContext, MainActivity::class.java)
                     intent.putExtra("name", name)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -92,7 +99,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkIfAutoLoginSet() {
         var info: SharedPreferences = getSharedPreferences("setting", 0)
-        var editor: SharedPreferences.Editor = info.edit()
 
         if (!info.getString("password", "").equals("")) {
             println("자동로그인이 되어있음")

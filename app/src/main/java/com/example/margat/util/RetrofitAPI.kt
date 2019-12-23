@@ -1,13 +1,15 @@
 package com.example.margat.util
 
+import com.example.margat.config.WebConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitAPI {
+class RetrofitAPI: WebConfig() {
+
     val creater: Retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.9:8080/")
+        .baseUrl("${ipAddress}:${portNo}/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(createOkHttpClient())
         .build()
