@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.example.margat.R
+import com.example.margat.viewmodel.PostingViewModel
 
 class PostingFragment : Fragment() {
 

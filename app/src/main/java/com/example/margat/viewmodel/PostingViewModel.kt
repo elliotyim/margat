@@ -1,4 +1,4 @@
-package com.example.margat.fragment
+package com.example.margat.viewmodel
 
 import androidx.lifecycle.ViewModel
 

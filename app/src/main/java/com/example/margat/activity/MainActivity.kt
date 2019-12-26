@@ -1,6 +1,7 @@
 package com.example.margat.activity
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -8,10 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.example.margat.R
 import com.example.margat.adapter.ContentsPagerAdapter
-import com.example.margat.fragment.ProfileFragment
 import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageFragment
-import com.example.margat.fragment.PostingFragment
+import com.example.margat.fragment.ProfileFragment
 import com.example.margat.item.FeedContent
 import com.example.margat.item.MessageContent
 import com.google.android.material.tabs.TabLayout
@@ -72,12 +72,7 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    private fun checkout() {
-        var info: SharedPreferences = getSharedPreferences("setting", 0)
-        var editor: SharedPreferences.Editor = info.edit()
-        editor.clear()
-        editor.commit()
-    }
+
 
     override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {}
     override fun onListFragmentInteraction(item: MessageContent.MessageItem?) {}

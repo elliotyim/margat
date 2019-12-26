@@ -16,7 +16,6 @@ import retrofit2.Response
 
 
 class LoginActivity : AppCompatActivity() {
-    val tag = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,14 +1,17 @@
 package com.example.margat.fragment
 
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.fragment.app.Fragment
 import com.example.margat.R
+import com.example.margat.activity.LoginActivity
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,14 +38,31 @@ class ProfileFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        logoutButton.setOnClickListener {
+            var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
+            var editor: SharedPreferences.Editor = info.edit()
+            editor.clear()
+            editor.apply()
+
+            val intent = Intent(this.activity, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -99,4 +119,5 @@ class ProfileFragment : Fragment() {
                 }
             }
     }
+
 }
