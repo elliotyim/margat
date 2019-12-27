@@ -15,8 +15,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.FutureTarget
 import com.example.margat.R
 import com.example.margat.activity.LoginActivity
+import com.example.margat.adapter.MyPhotoRecyclerAdapter
+import com.example.margat.item.MyPhotoItem
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.net.URL
 import java.util.concurrent.Executors
@@ -30,7 +36,11 @@ class ProfileFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
     private var profileImage: ImageView? = null
-    private var threadPool = Executors.newFixedThreadPool(10)
+    private var threadPool = Executors.newFixedThreadPool(3)
+
+    private lateinit var mRecyclerVIew: RecyclerView
+    private lateinit var mAdapter: MyPhotoRecyclerAdapter
+    private var mList = ArrayList<MyPhotoItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +62,20 @@ class ProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         profileImage = profilePhoto
-        BackGroundProcessor().executeOnExecutor(threadPool, "")
+        ProfilePhotoProcessor().executeOnExecutor(threadPool, "http://192.168.0.125:8080/upload/profile_photos/a.jpg")
+
+        mRecyclerVIew = myPhotosRecycler
+        mAdapter = MyPhotoRecyclerAdapter(mList)
+        mRecyclerVIew.adapter = mAdapter
+
+        mRecyclerVIew.layoutManager = GridLayoutManager(this.context, 3)
+        mContext = activity!!.applicationContext
+
+        for (i in 1..10) {
+            addItem("http://192.168.0.125:8080/upload/photos/b.jpg")
+        }
+
+        mAdapter.notifyDataSetChanged()
 
         logoutButton.setOnClickListener {
             var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
@@ -91,6 +114,7 @@ class ProfileFragment : Fragment() {
     }
 
     companion object {
+        lateinit var mContext: Context
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ProfileFragment().apply {
@@ -101,9 +125,9 @@ class ProfileFragment : Fragment() {
             }
     }
 
-    inner class BackGroundProcessor: AsyncTask<String, Void, Bitmap>() {
+    inner class ProfilePhotoProcessor: AsyncTask<String, Void, Bitmap>() {
         override fun doInBackground(vararg params: String?): Bitmap? {
-            val url = URL("http://192.168.0.125:8080/upload/profile_photo/a.jpg")
+            val url = URL(params[0])
             return try {
                 BitmapFactory.decodeStream(url.openConnection().getInputStream())
             } catch (e: Exception) {
@@ -120,6 +144,12 @@ class ProfileFragment : Fragment() {
                 it.setImageBitmap(result)
             }
         }
+    }
+
+    fun addItem(photoUri: String) {
+        var item = MyPhotoItem()
+        item.photoUri = photoUri
+        mList.add(item)
     }
 
 }

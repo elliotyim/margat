@@ -15,16 +15,9 @@ import com.example.margat.adapter.MyMessageRecyclerViewAdapter
 import com.example.margat.item.MessageContent
 import com.example.margat.item.MessageContent.MessageItem
 
-/**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [MessageFragment.OnListFragmentInteractionListener] interface.
- */
 class MessageFragment : Fragment() {
 
-    // TODO: Customize parameters
     private var columnCount = 1
-
     private var listener: OnListFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +34,6 @@ class MessageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_message_list, container, false)
 
-        // Set the adapter
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = when {
@@ -63,7 +55,7 @@ class MessageFragment : Fragment() {
         if (context is OnListFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
         }
     }
 
@@ -72,28 +64,13 @@ class MessageFragment : Fragment() {
         listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onListFragmentInteraction(item: MessageItem?)
     }
 
     companion object {
-
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
             MessageFragment().apply {
