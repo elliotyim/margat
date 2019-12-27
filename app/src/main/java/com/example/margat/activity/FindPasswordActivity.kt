@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
 import com.example.margat.service.MemberService
+import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.activity_find_password.*
 import okhttp3.ResponseBody
@@ -32,11 +33,7 @@ class FindPasswordActivity : AppCompatActivity() {
     }
 
     private fun checkNameAndEmailOf(member: Member, service: MemberService) {
-        service.findMemberByNameAndEmail(member).enqueue(object: Callback<Array<Member>> {
-            override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
-                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-            }
-
+        service.findMemberByNameAndEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(
                 call: Call<Array<Member>>,
                 response: Response<Array<Member>>
@@ -58,11 +55,7 @@ class FindPasswordActivity : AppCompatActivity() {
         member: Member,
         service: MemberService
     ) {
-        service.sendRandomPasswordAt(member).enqueue(object: Callback<ResponseBody>{
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-            }
-
+        service.sendRandomPasswordAt(member).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Toast.makeText(applicationContext, "임시비밀번호가 메일로 전송되었습니다!", Toast.LENGTH_SHORT).show()
             }

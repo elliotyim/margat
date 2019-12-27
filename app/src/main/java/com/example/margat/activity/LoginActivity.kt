@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
 import com.example.margat.service.MemberService
+import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 
@@ -42,11 +42,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkEmailOf(member: Member, service: MemberService) {
-        service.findMemberByEmail(member).enqueue(object: Callback<Array<Member>> {
-            override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
-                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-            }
-
+        service.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -60,11 +56,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
     private fun checkEmailAndPasswordOf(member: Member, service: MemberService) {
-        service.findMemberByEmailAndPassword(member).enqueue(object: Callback<Array<Member>> {
-            override fun onFailure(call: Call<Array<Member>>, t: Throwable) {
-                Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-            }
-
+        service.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
