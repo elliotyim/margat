@@ -16,6 +16,9 @@ DROP TABLE IF EXISTS comments RESTRICT;
 -- 좋아요
 DROP TABLE IF EXISTS likes RESTRICT;
 
+-- 팔로잉
+DROP TABLE IF EXISTS followings RESTRICT;
+
 -- 회원
 CREATE TABLE members (
   mem_no        INTEGER      NOT NULL, -- 회원번호
@@ -23,12 +26,11 @@ CREATE TABLE members (
   pwd           VARCHAR(50)  NOT NULL, -- 비밀번호
   email         VARCHAR(40)  NOT NULL, -- 이메일
   tel           VARCHAR(30)  NOT NULL, -- 전화번호
+  rdt           DATETIME     NOT NULL DEFAULT now(), -- 가입일
   profile_photo VARCHAR(255) NULL,     -- 프로필사진
-  follow        INTEGER      NULL     DEFAULT 0, -- 팔로우
-  folling       INTEGER      NULL     DEFAULT 0, -- 팔로잉
   email_key     VARCHAR(255) NULL,     -- 인증키
   mem_state     INTEGER      NULL     DEFAULT 0, -- 회원상태
-  mem_grade     INTEGER      NULL     DEFAULT 0 -- 회원등급
+  mem_grade     INTEGER      NULL     DEFAULT 1 -- 회원등급
 );
 
 -- 회원
@@ -89,7 +91,8 @@ CREATE TABLE messages (
   sender       INTEGER    NOT NULL, -- 보낸사람
   receiver     INTEGER    NOT NULL, -- 받는사람
   message_cont TEXT       NOT NULL, -- 내용
-  is_read      TINYINT(1) NOT NULL DEFAULT false -- 수신여부
+  is_read      TINYINT(1) NOT NULL DEFAULT false, -- 수신여부
+  cdt          DATETIME   NOT NULL DEFAULT now() -- 작성일
 );
 
 -- 메시지
@@ -138,6 +141,23 @@ ALTER TABLE likes
 
 ALTER TABLE likes
   MODIFY COLUMN like_no INTEGER NOT NULL AUTO_INCREMENT;
+
+-- 팔로잉
+CREATE TABLE followings (
+  follow_no       INTEGER NOT NULL, -- 팔로잉번호
+  followed_mem_no INTEGER NOT NULL, -- 대상회원번호
+  follower_no     INTEGER NOT NULL  -- 팔로워회원번호
+);
+
+-- 팔로잉
+ALTER TABLE followings
+  ADD CONSTRAINT PK_followings -- 팔로잉 기본키
+    PRIMARY KEY (
+      follow_no -- 팔로잉번호
+    );
+
+ALTER TABLE followings
+  MODIFY COLUMN follow_no INTEGER NOT NULL AUTO_INCREMENT;
 
 -- 포스트
 ALTER TABLE posts
@@ -234,6 +254,26 @@ ALTER TABLE likes
   ADD CONSTRAINT FK_members_TO_likes -- 회원 -> 좋아요
     FOREIGN KEY (
       like_mem_no -- 좋아요회원번호
+    )
+    REFERENCES members ( -- 회원
+      mem_no -- 회원번호
+    );
+
+-- 팔로잉
+ALTER TABLE followings
+  ADD CONSTRAINT FK_members_TO_followings -- 회원 -> 팔로잉
+    FOREIGN KEY (
+      followed_mem_no -- 대상회원번호
+    )
+    REFERENCES members ( -- 회원
+      mem_no -- 회원번호
+    );
+
+-- 팔로잉
+ALTER TABLE followings
+  ADD CONSTRAINT FK_members_TO_followings2 -- 회원 -> 팔로잉2
+    FOREIGN KEY (
+      follower_no -- 팔로워회원번호
     )
     REFERENCES members ( -- 회원
       mem_no -- 회원번호
