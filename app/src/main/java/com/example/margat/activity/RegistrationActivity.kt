@@ -21,12 +21,14 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         createIDButton.setOnClickListener {
-            var name = nameInput.text.toString()
-            var password = passwordInput.text.toString()
-            var email = emailInput.text.toString()
-            var tel = telInput.text.toString()
 
-            var member = Member(name, password, email, tel)
+            var member = Member().apply {
+                name = nameInput.text.toString()
+                password = passwordInput.text.toString()
+                email = emailInput.text.toString()
+                tel = telInput.text.toString()
+
+            }
 
             var service = RetrofitAPI().creater.create(MemberService::class.java)
             service.insert(member).enqueue(object: Callback<ResponseBody>{

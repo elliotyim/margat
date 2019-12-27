@@ -29,7 +29,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         signin_button.setOnClickListener {
-            var member = Member(email_input.text.toString(), password_input.text.toString())
+            var member = Member().apply {
+                email = email_input.text.toString()
+                password = password_input.text.toString()
+            }
+
             var service = RetrofitAPI().creater.create(MemberService::class.java)
             checkEmailOf(member, service)
         }
@@ -87,7 +91,10 @@ class LoginActivity : AppCompatActivity() {
 
         if (!info.getString("password", "").equals("")) {
             println("자동로그인이 되어있음")
-            var member = Member(info.getString("email", "")!!, info.getString("password", "")!!)
+            var member = Member().apply {
+                email = info.getString("email", "").toString()
+                password = info.getString("password", "").toString()
+            }
             var service = RetrofitAPI().creater.create(MemberService::class.java)
             checkEmailAndPasswordOf(member, service)
         }

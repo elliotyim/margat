@@ -21,11 +21,10 @@ class FindPasswordActivity : AppCompatActivity() {
         setContentView(R.layout.activity_find_password)
 
         submitButton.setOnClickListener {
-            var member = Member()
-            var name = nameInput.text.toString()
-            var email = emailInput.text.toString()
-            member.name = name
-            member.email = email
+            var member = Member().apply {
+                name = nameInput.text.toString()
+                email = emailInput.text.toString()
+            }
 
             var service = RetrofitAPI().creater.create(MemberService::class.java)
             checkNameAndEmailOf(member, service)
