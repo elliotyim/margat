@@ -46,6 +46,12 @@ CREATE UNIQUE INDEX UIX_members
     tel ASC -- 전화번호
   );
 
+-- 회원 유니크 인덱스2
+CREATE UNIQUE INDEX UIX_members2
+  ON members ( -- 회원
+    email ASC -- 이메일
+  );
+
 ALTER TABLE members
   MODIFY COLUMN mem_no INTEGER NOT NULL AUTO_INCREMENT;
 
@@ -126,25 +132,22 @@ ALTER TABLE comments
 
 -- 좋아요
 CREATE TABLE likes (
-  like_no     INTEGER NOT NULL, -- 좋아요번호
   like_mem_no INTEGER NOT NULL, -- 좋아요회원번호
-  post_no     INTEGER NULL,     -- 포스트번호
-  comment_no  INTEGER NULL      -- 코멘트번호
+  post_no     INTEGER NOT NULL, -- 포스트번호
+  comment_no  INTEGER NOT NULL  -- 코멘트번호
 );
 
 -- 좋아요
 ALTER TABLE likes
   ADD CONSTRAINT PK_likes -- 좋아요 기본키
     PRIMARY KEY (
-      like_no -- 좋아요번호
+      like_mem_no, -- 좋아요회원번호
+      post_no,     -- 포스트번호
+      comment_no   -- 코멘트번호
     );
-
-ALTER TABLE likes
-  MODIFY COLUMN like_no INTEGER NOT NULL AUTO_INCREMENT;
 
 -- 팔로잉
 CREATE TABLE followings (
-  follow_no       INTEGER NOT NULL, -- 팔로잉번호
   followed_mem_no INTEGER NOT NULL, -- 대상회원번호
   follower_no     INTEGER NOT NULL  -- 팔로워회원번호
 );
@@ -153,11 +156,9 @@ CREATE TABLE followings (
 ALTER TABLE followings
   ADD CONSTRAINT PK_followings -- 팔로잉 기본키
     PRIMARY KEY (
-      follow_no -- 팔로잉번호
+      followed_mem_no, -- 대상회원번호
+      follower_no      -- 팔로워회원번호
     );
-
-ALTER TABLE followings
-  MODIFY COLUMN follow_no INTEGER NOT NULL AUTO_INCREMENT;
 
 -- 포스트
 ALTER TABLE posts
