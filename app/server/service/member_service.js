@@ -4,22 +4,33 @@ const guid = require('../util/guid');
 mysqlDB.connect();
 
 module.exports = {
+  
+  sqlColumns: 'mem_no as no,'
+              +'name, email, tel,'
+              +'rdt as registeredDate,'
+              +'profile_photo as profilePhoto,'
+              +'email_key as emailKey,'
+              +'mem_state as memberState',
+
   getUserByEmail(req, res) {
     let email = req.body.email;
     
-    mysqlDB.query('select * from members where email=?',
-    [email],
-    (err, rows) => {
-      if (err) res.send(err)
-      else if (rows) res.send(rows)
-    });
+    mysqlDB.query(
+      'select '+ this.sqlColumns +
+      ' from members where email=?',
+      [email],
+      (err, rows) => {
+        if (err) res.send(err)
+        else if (rows) res.send(rows)
+      });
   },
   getUserByEmailAndPassword(req, res) {
     let email = req.body.email;
     let password = req.body.password;
-  
+
     mysqlDB.query(
-      'select * from members where email=? and pwd=password(?)',
+      'select '+ this.sqlColumns +
+      ' from members where email=? and pwd=password(?)',
       [email, password],
       (err, rows) => {
         if (err) res.send(err)
@@ -30,7 +41,8 @@ module.exports = {
     let name = req.body.name;
     let email = req.body.email;
     mysqlDB.query(
-      'select * from members where name=? and email=?',
+      'select '+ this.sqlColumns +
+      ' from members where name=? and email=?',
       [name, email],
       (err, rows) => {
         if (err) res.send(err)
@@ -58,7 +70,8 @@ module.exports = {
     let password = guid().substring(0,8);
 
     mysqlDB.query(
-      'update members set pwd=password(?) where name=? and email=?',
+      'update members set pwd=password(?)'
+      +' where name=? and email=?',
       [password, name, email],
       (err, rows) => {
         if (err) res.send(err)

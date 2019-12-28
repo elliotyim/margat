@@ -1,25 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const memberController = require('../controller/member_controller');
+const memberService = require('../service/member_service');
 
 router.post('/member/email', (req, res) => {
-  memberController.getUserByEmail(req,res);
+  memberService.getUserByEmail(req,res);
 });
 
 router.post('/member/email/password', (req, res) => {
-  memberController.getUserByEmailAndPassword(req,res);
+  memberService.getUserByEmailAndPassword(req,res);
 });
 
 router.post('/member/name/email', (req,res) => {
-  memberController.getUserByNameAndEmail(req, res);
+  memberService.getUserByNameAndEmail(req, res);
 });
 
 router.post('/member/registration', (req, res) => {
-  memberController.registerUser(req,res);
+  memberService.registerUser(req,res);
 });
 
 router.patch('/member/password', (req, res) => {
-  memberController.changeUserPassword(req, res);
+  memberService.changeUserPassword(req, res);
 });
 
 module.exports = router;

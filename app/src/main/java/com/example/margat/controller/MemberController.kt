@@ -1,4 +1,4 @@
-package com.example.margat.service
+package com.example.margat.controller
 
 import com.example.margat.domain.Member
 import okhttp3.ResponseBody
@@ -7,7 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 
-interface MemberService {
+interface MemberController {
     @POST("member/email")
     fun findMemberByEmail(@Body member: Member): Call<Array<Member>>
 
