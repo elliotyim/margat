@@ -2,9 +2,12 @@ package com.example.margat.domain
 
 class Member {
     var no: Int = 0
-    lateinit var name: String
-    lateinit var password: String
-    lateinit var email: String
-    lateinit var tel: String
-    lateinit var profilePhoto: String
+    var name: String? = null
+    var password: String? = null
+    var email: String? = null
+    var tel: String? = null
+    var registeredDate: String? = null
+    var profilePhoto: String? = null
+    var emailKey: String? = null
+    var memberState: Int = 0
 }

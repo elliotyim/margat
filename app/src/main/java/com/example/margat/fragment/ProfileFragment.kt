@@ -3,53 +3,34 @@ package com.example.margat.fragment
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import com.example.margat.R
 import com.example.margat.activity.LoginActivity
 import com.example.margat.adapter.MyPhotoRecyclerAdapter
+import com.example.margat.config.WebConfig.Companion.ipAddress
+import com.example.margat.config.WebConfig.Companion.portNo
+import com.example.margat.controller.MemberController
 import com.example.margat.item.MyPhotoItem
+import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.fragment_profile.*
-import java.net.URL
-import java.util.concurrent.Executors
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class ProfileFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
-
-    private var profileImage: ImageView? = null
-    private var threadPool = Executors.newFixedThreadPool(3)
 
     private lateinit var mRecyclerVIew: RecyclerView
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
     private var mList = ArrayList<MyPhotoItem>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,18 +42,17 @@ class ProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        profileImage = profilePhoto
-        ProfilePhotoProcessor().executeOnExecutor(threadPool, "http://192.168.0.125:8080/upload/profile_photos/a.jpg")
+        mContext = activity!!.applicationContext
+        loadUserInfo()
 
         mRecyclerVIew = myPhotosRecycler
         mAdapter = MyPhotoRecyclerAdapter(mList)
         mRecyclerVIew.adapter = mAdapter
 
         mRecyclerVIew.layoutManager = GridLayoutManager(this.context, 3)
-        mContext = activity!!.applicationContext
 
         for (i in 1..10) {
-            addItem("http://192.168.0.125:8080/upload/photos/b.jpg")
+            addItem("${ipAddress}:${portNo}/upload/photos/b.jpg")
         }
 
         mAdapter.notifyDataSetChanged()
@@ -115,41 +95,29 @@ class ProfileFragment : Fragment() {
 
     companion object {
         lateinit var mContext: Context
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 
-    inner class ProfilePhotoProcessor: AsyncTask<String, Void, Bitmap>() {
-        override fun doInBackground(vararg params: String?): Bitmap? {
-            val url = URL(params[0])
-            return try {
-                BitmapFactory.decodeStream(url.openConnection().getInputStream())
-            } catch (e: Exception) {
-                println(e.stackTrace)
-                null
-            }
-
-        }
-
-        override fun onPostExecute(result: Bitmap?) {
-            profileImage?.background = ShapeDrawable(OvalShape())
-            profileImage?.clipToOutline = true
-            profileImage?.let {
-                it.setImageBitmap(result)
-            }
-        }
-    }
-
-    fun addItem(photoUri: String) {
+    private fun addItem(photoUri: String) {
         var item = MyPhotoItem()
         item.photoUri = photoUri
         mList.add(item)
+    }
+
+    private fun loadUserInfo() {
+        var controller = RetrofitAPI().creater.create(MemberController::class.java)
+
+        var info = mContext.getSharedPreferences("loginUser", 0)
+        profileName.text = info.getString("name", "").toString()
+
+        var profilePhotoFileName = info.getString("profilePhoto", "").toString()
+        Glide.with(mContext)
+            .load("${ipAddress}:${portNo}/upload/profile_photos/${profilePhotoFileName}")
+            .into(profilePhoto)
+        profilePhoto?.background = ShapeDrawable(OvalShape())
+        profilePhoto?.clipToOutline = true
+
+        controller.
+
     }
 
 }

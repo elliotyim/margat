@@ -7,9 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
-import com.example.margat.service.MemberService
+import com.example.margat.controller.MemberController
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Response
@@ -34,8 +35,8 @@ class LoginActivity : AppCompatActivity() {
                 password = password_input.text.toString()
             }
 
-            var service = RetrofitAPI().creater.create(MemberService::class.java)
-            checkEmailOf(member, service)
+            var controller = RetrofitAPI().creater.create(MemberController::class.java)
+            checkEmailOf(member, controller)
         }
 
         signUpText.setOnClickListener{
@@ -45,8 +46,8 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun checkEmailOf(member: Member, service: MemberService) {
-        service.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailOf(member: Member, controller: MemberController) {
+        controller.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -54,13 +55,13 @@ class LoginActivity : AppCompatActivity() {
                             "로그인 실패: 이메일 틀립니다!", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    checkEmailAndPasswordOf(member, service)
+                    checkEmailAndPasswordOf(member, controller)
                 }
             }
         })
     }
-    private fun checkEmailAndPasswordOf(member: Member, service: MemberService) {
-        service.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailAndPasswordOf(member: Member, controller: MemberController) {
+        controller.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -72,9 +73,21 @@ class LoginActivity : AppCompatActivity() {
                     if(rememberMe.isChecked)
                         setAutoLogin(member)
 
-                    var name: String = response.body()!![0].name
+                    var name: String? = response.body()!![0].name
                     Toast.makeText(applicationContext,
                         "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
+                    var info = getSharedPreferences("loginUser", 0)
+                    var editor = info.edit().apply {
+                        putInt("no", response.body()!![0].no)
+                        putString("name", name)
+                        putString("email", response.body()!![0].email)
+                        putString("tel", response.body()!![0].tel)
+                        putString("registeredDate", response.body()!![0].registeredDate)
+                        putString("profilePhoto", response.body()!![0].profilePhoto)
+                        putString("emailKey", response.body()!![0].emailKey)
+                        putInt("memberState", response.body()!![0].memberState)
+                    }
+                    editor.commit()
 
                     val intent = Intent(applicationContext, MainActivity::class.java)
                     intent.putExtra("name", name)
@@ -95,8 +108,8 @@ class LoginActivity : AppCompatActivity() {
                 email = info.getString("email", "").toString()
                 password = info.getString("password", "").toString()
             }
-            var service = RetrofitAPI().creater.create(MemberService::class.java)
-            checkEmailAndPasswordOf(member, service)
+            var controller = RetrofitAPI().creater.create(MemberController::class.java)
+            checkEmailAndPasswordOf(member, controller)
         }
     }
 
