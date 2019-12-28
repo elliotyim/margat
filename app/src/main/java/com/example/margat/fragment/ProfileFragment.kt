@@ -19,10 +19,14 @@ import com.example.margat.activity.LoginActivity
 import com.example.margat.adapter.MyPhotoRecyclerAdapter
 import com.example.margat.config.WebConfig.Companion.ipAddress
 import com.example.margat.config.WebConfig.Companion.portNo
-import com.example.margat.controller.MemberController
+import com.example.margat.controller.PostingController
+import com.example.margat.domain.Post
 import com.example.margat.item.MyPhotoItem
+import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.fragment_profile.*
+import retrofit2.Call
+import retrofit2.Response
 
 
 class ProfileFragment : Fragment() {
@@ -50,12 +54,6 @@ class ProfileFragment : Fragment() {
         mRecyclerVIew.adapter = mAdapter
 
         mRecyclerVIew.layoutManager = GridLayoutManager(this.context, 3)
-
-        for (i in 1..10) {
-            addItem("${ipAddress}:${portNo}/upload/photos/b.jpg")
-        }
-
-        mAdapter.notifyDataSetChanged()
 
         logoutButton.setOnClickListener {
             var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
@@ -104,7 +102,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserInfo() {
-        var controller = RetrofitAPI().creater.create(MemberController::class.java)
+        var controller = RetrofitAPI().creater.create(PostingController::class.java)
 
         var info = mContext.getSharedPreferences("loginUser", 0)
         profileName.text = info.getString("name", "").toString()
@@ -116,7 +114,19 @@ class ProfileFragment : Fragment() {
         profilePhoto?.background = ShapeDrawable(OvalShape())
         profilePhoto?.clipToOutline = true
 
-        controller.
+        controller.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
+            override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
+                if (response.code() == 200) {
+                    if (response.body().isNullOrEmpty()) {
+                        return
+                    }
+                    for (i in 1..response.body()?.size!!)
+                        addItem("${ipAddress}:${portNo}/upload/photos/b.jpg")
+                    mAdapter.notifyDataSetChanged()
+                }
+            }
+
+        })
 
     }
 

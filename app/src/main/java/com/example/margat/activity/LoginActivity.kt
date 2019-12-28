@@ -10,7 +10,6 @@ import com.example.margat.domain.Member
 import com.example.margat.controller.MemberController
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Response
