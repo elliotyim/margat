@@ -19,7 +19,9 @@ import com.example.margat.activity.LoginActivity
 import com.example.margat.adapter.MyPhotoRecyclerAdapter
 import com.example.margat.config.WebConfig.Companion.ipAddress
 import com.example.margat.config.WebConfig.Companion.portNo
+import com.example.margat.controller.FollowingController
 import com.example.margat.controller.PostingController
+import com.example.margat.domain.Following
 import com.example.margat.domain.Post
 import com.example.margat.item.MyPhotoItem
 import com.example.margat.util.MyCallback
@@ -106,7 +108,9 @@ class ProfileFragment : Fragment() {
 
         profileName.text = info.getString("name", "").toString()
         setProfilePhotoBy(info)
+        setFollowingsAndFollowers(info)
         setPostPhotosBy(info)
+
     }
 
     private fun setProfilePhotoBy(info: SharedPreferences) {
@@ -116,6 +120,39 @@ class ProfileFragment : Fragment() {
             .into(profilePhoto)
         profilePhoto?.background = ShapeDrawable(OvalShape())
         profilePhoto?.clipToOutline = true
+    }
+
+    private fun setFollowingsAndFollowers(info: SharedPreferences) {
+        var followingController = RetrofitAPI().creater.create(FollowingController::class.java)
+
+        var memberNo = info.getInt("no", 0)
+
+        followingController.findAllFollowingsOf(memberNo).enqueue(object: MyCallback<Array<Following>>() {
+            override fun onResponse(
+                call: Call<Array<Following>>,
+                response: Response<Array<Following>>
+            ) {
+                if (response.code() == 200) {
+                    if (response.body().isNullOrEmpty()) {return}
+                    println("test!!!")
+                    println(response.body())
+                    var followings = 0
+                    var followers = 0
+                    var response: Array<Following> = response.body()!!
+                    for (i in response.indices) {
+                        if (response[i].followerMemberNo == memberNo)
+                            followings++
+                        else if (response[i].followedMemberNo == memberNo)
+                            followers++
+                    }
+
+                    numberOfFollowings.text = followings.toString()
+                    numberOfFollowers.text = followers.toString()
+
+                }
+            }
+
+        })
     }
 
     private fun setPostPhotosBy(info: SharedPreferences) {
@@ -128,10 +165,7 @@ class ProfileFragment : Fragment() {
                     if (response.body().isNullOrEmpty()) {return}
 
                     for (i in 1..response.body()?.size!!) {
-                        println("test!!!")
-                        println(response.body()!![i-1])
                         var photoName = response.body()!![i-1].photos[0].photoName
-                        println(photoName)
                         addItem("${ipAddress}:${portNo}/upload/photos/${photoName}")
                     }
 
@@ -145,5 +179,4 @@ class ProfileFragment : Fragment() {
     private fun setNumberOfPosts(size: Int) {
         numberOfPost.text = size.toString()
     }
-
 }
