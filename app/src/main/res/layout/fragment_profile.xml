@@ -72,7 +72,7 @@
                     android:id="@+id/numberOfPost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12"
+                    android:text="0"
                     android:textSize="20dp"
                     />
                 <TextView
@@ -96,7 +96,7 @@
                     android:id="@+id/numberOfFollowers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12"
+                    android:text="0"
                     android:textSize="20dp"
                     />
 
@@ -120,7 +120,7 @@
                     android:id="@+id/numberOfFollowings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12"
+                    android:text="0"
                     android:textSize="20dp"
                     />
                 <TextView

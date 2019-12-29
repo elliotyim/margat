@@ -124,12 +124,8 @@ class ProfileFragment : Fragment() {
         postingController.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
                 if (response.code() == 200) {
-                    if (response.body().isNullOrEmpty()) {
-                        println("리턴되었음")
-                        return
-                    }
-
                     setNumberOfPosts(response.body()?.size!!)
+                    if (response.body().isNullOrEmpty()) {return}
 
                     for (i in 1..response.body()?.size!!) {
                         println("test!!!")
