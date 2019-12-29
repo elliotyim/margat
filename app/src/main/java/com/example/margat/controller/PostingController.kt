@@ -7,5 +7,5 @@ import retrofit2.http.Path
 
 interface PostingController {
     @GET("posts/member/{no}")
-    fun findAllPostsOf(@Path("no") no:Int): Call<Array<Post>>
+    fun findAllPostsOf(@Path("no") memberNo:Int): Call<Array<Post>>
 }
