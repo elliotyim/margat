@@ -2,7 +2,7 @@ const mysqlDB = require('../mysql_config/mysql-db');
 const photoService = require('./photo_service')
 
 module.exports = {
-  getBasicSqlColumns: () => {
+  getBasicSqlColumns() {
     let sqlColumns = 'post_no as postNo,'
                 +'mem_no as memberNo,'
                 +'post_cont as postContent,'

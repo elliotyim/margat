@@ -3,7 +3,7 @@ const sendMail = require('../util/mail_sender');
 const guid = require('../util/guid');
 
 module.exports = {
-  getBasicSqlColumns: () => {
+  getBasicSqlColumns() {
     let sqlColumns = 'mem_no as no,'
                 +'name, email, tel,'
                 +'rdt as registeredDate,'
