@@ -34,5 +34,28 @@ module.exports = {
           })(rows);
         }
       });
+  },
+  insertPostWithFiles(req, res) {
+    let memberNo = Number(req.body.memberNo);
+    let postContent = req.body.postContent;
+    let photos = req.files;
+
+    ((memberNo, postContent) => {
+      return new Promise((resolve) => {
+        mysqlDB.query(
+          'insert into posts(mem_no, post_cont, post_cdt)' +
+          'values(?,?,now())',
+          [memberNo, postContent],
+          (err, rows) => {
+            if (err) res.send(err)
+            else if (rows) resolve(rows.insertId);
+          });
+      })
+    })(memberNo, postContent)
+      .then((result) => {
+        for (let i = 0; i < photos.length; i++)
+          photoService.insertPhotosOf(result, photos[i].filename);
+      });
+
   }
 }

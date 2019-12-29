@@ -11,5 +11,16 @@ module.exports = {
         else if (rows) resolve(rows)
       });
     });
+  },
+  insertPhotosOf(postNo, photoName) {
+    mysqlDB.query(
+      'insert into photos(post_no, photo_name) '+
+      'values(?,?)',
+      [postNo, photoName],
+      (err, rows) => {
+        if (err) console.log(err)
+        else if (rows) console.log(rows)
+      }
+    )
   }
 }

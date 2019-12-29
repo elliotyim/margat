@@ -10,11 +10,10 @@ const postRoute = require('../routes/post_route');
 
 const io = require('socket.io')(server);
 const sockectEventOn = require('../util/socket')
-
 sockectEventOn(io);
 
 app.use(express.static(path.join(__dirname, '.')));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/', memberRoute, followingRoute, postRoute);
