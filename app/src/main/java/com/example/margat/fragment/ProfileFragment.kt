@@ -102,32 +102,52 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserInfo() {
-        var controller = RetrofitAPI().creater.create(PostingController::class.java)
-
         var info = mContext.getSharedPreferences("loginUser", 0)
-        profileName.text = info.getString("name", "").toString()
 
+        profileName.text = info.getString("name", "").toString()
+        setProfilePhotoBy(info)
+        setPostPhotosBy(info)
+    }
+
+    private fun setProfilePhotoBy(info: SharedPreferences) {
         var profilePhotoFileName = info.getString("profilePhoto", "").toString()
         Glide.with(mContext)
             .load("${ipAddress}:${portNo}/upload/profile_photos/${profilePhotoFileName}")
             .into(profilePhoto)
         profilePhoto?.background = ShapeDrawable(OvalShape())
         profilePhoto?.clipToOutline = true
+    }
 
-        controller.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
+    private fun setPostPhotosBy(info: SharedPreferences) {
+        var postingController = RetrofitAPI().creater.create(PostingController::class.java)
+
+        postingController.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
+                        println("리턴되었음")
                         return
                     }
-                    for (i in 1..response.body()?.size!!)
-                        addItem("${ipAddress}:${portNo}/upload/photos/b.jpg")
+
+                    setNumberOfPosts(response.body()?.size!!)
+
+                    for (i in 1..response.body()?.size!!) {
+                        println("test!!!")
+                        println(response.body()!![i-1])
+                        var photoName = response.body()!![i-1].photos[0].photoName
+                        println(photoName)
+                        addItem("${ipAddress}:${portNo}/upload/photos/${photoName}")
+                    }
+
                     mAdapter.notifyDataSetChanged()
                 }
             }
 
         })
+    }
 
+    private fun setNumberOfPosts(size: Int) {
+        numberOfPost.text = size.toString()
     }
 
 }
