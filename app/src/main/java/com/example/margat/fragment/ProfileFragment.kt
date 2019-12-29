@@ -117,6 +117,7 @@ class ProfileFragment : Fragment() {
         var profilePhotoFileName = info.getString("profilePhoto", "").toString()
         Glide.with(mContext)
             .load("${ipAddress}:${portNo}/upload/profile_photos/${profilePhotoFileName}")
+            .placeholder(R.drawable.profile_default_circle)
             .into(profilePhoto)
         profilePhoto?.background = ShapeDrawable(OvalShape())
         profilePhoto?.clipToOutline = true
@@ -134,15 +135,15 @@ class ProfileFragment : Fragment() {
             ) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {return}
-                    println("test!!!")
-                    println(response.body())
+
                     var followings = 0
                     var followers = 0
-                    var response: Array<Following> = response.body()!!
-                    for (i in response.indices) {
-                        if (response[i].followerMemberNo == memberNo)
+                    var result: Array<Following> = response.body()!!
+
+                    for (i in result.indices) {
+                        if (result[i].followerMemberNo == memberNo)
                             followings++
-                        else if (response[i].followedMemberNo == memberNo)
+                        else if (result[i].followedMemberNo == memberNo)
                             followers++
                     }
 
