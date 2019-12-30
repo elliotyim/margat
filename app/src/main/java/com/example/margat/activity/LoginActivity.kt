@@ -75,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
                     var name: String? = response.body()!![0].name
                     Toast.makeText(applicationContext,
                         "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
+
                     var info = getSharedPreferences("loginUser", 0)
                     var editor = info.edit().apply {
                         putInt("no", response.body()!![0].no)
@@ -102,11 +103,11 @@ class LoginActivity : AppCompatActivity() {
         var info: SharedPreferences = getSharedPreferences("setting", 0)
 
         if (!info.getString("password", "").equals("")) {
-            println("자동로그인이 되어있음")
             var member = Member().apply {
                 email = info.getString("email", "").toString()
                 password = info.getString("password", "").toString()
             }
+
             var controller = RetrofitAPI().creater.create(MemberController::class.java)
             checkEmailAndPasswordOf(member, controller)
         }
@@ -115,6 +116,7 @@ class LoginActivity : AppCompatActivity() {
     private fun setAutoLogin(member: Member) {
         var info: SharedPreferences = getSharedPreferences("setting", 0)
         var editor: SharedPreferences.Editor = info.edit()
+
         editor.putString("email", member.email)
         editor.putString("password", member.password)
         editor.commit()

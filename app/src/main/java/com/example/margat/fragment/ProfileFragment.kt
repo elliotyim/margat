@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,8 +31,6 @@ import retrofit2.Response
 
 
 class ProfileFragment : Fragment() {
-    private var listener: OnFragmentInteractionListener? = null
-
     private lateinit var mRecyclerVIew: RecyclerView
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
     private var mList = ArrayList<MyPhotoItem>()
@@ -45,9 +42,8 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onStart() {
+        super.onStart()
         mContext = activity!!.applicationContext
         loadUserInfo()
 
@@ -68,29 +64,6 @@ class ProfileFragment : Fragment() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
-
-    }
-
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
@@ -147,8 +120,8 @@ class ProfileFragment : Fragment() {
                             followers++
                     }
 
-                    numberOfFollowings.text = followings.toString()
-                    numberOfFollowers.text = followers.toString()
+                    if (numberOfFollowings != null) numberOfFollowings.text = followings.toString()
+                    if (numberOfFollowers != null) numberOfFollowers.text = followers.toString()
 
                 }
             }
@@ -162,11 +135,13 @@ class ProfileFragment : Fragment() {
         postingController.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
                 if (response.code() == 200) {
-                    setNumberOfPosts(response.body()?.size!!)
+                    var result = response.body()
+                    var numberOfPost = result?.size
+                    setNumberOfPosts(numberOfPost)
                     if (response.body().isNullOrEmpty()) {return}
 
-                    for (i in 1..response.body()?.size!!) {
-                        var photoName = response.body()!![i-1].photos[0].photoName
+                    for (i in 1..numberOfPost!!) {
+                        var photoName = result!![i-1].photos[0].photoName
                         addItem("${ipAddress}:${portNo}/upload/photos/${photoName}")
                     }
 
@@ -177,7 +152,7 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    private fun setNumberOfPosts(size: Int) {
-        numberOfPost.text = size.toString()
+    private fun setNumberOfPosts(size: Int?) {
+        if (numberOfPost != null) numberOfPost.text = size.toString()
     }
 }

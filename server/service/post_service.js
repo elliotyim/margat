@@ -1,4 +1,5 @@
 const mysqlDB = require('../mysql_config/mysql-db');
+const async = require('async')
 const photoService = require('./photo_service')
 
 module.exports = {
@@ -53,8 +54,12 @@ module.exports = {
       })
     })(memberNo, postContent)
       .then((result) => {
-        for (let i = 0; i < photos.length; i++)
-          photoService.insertPhotosOf(result, photos[i].filename);
+        let isLastPhoto = false;
+        for (let i = 0; i < photos.length; i++) {
+          if (i == photos.length-1) isLastPhoto = true;
+          photoService.insertPhotosOf(result, photos[i].filename, res, isLastPhoto);
+        }
+        
       });
 
   }

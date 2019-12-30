@@ -12,14 +12,14 @@ module.exports = {
       });
     });
   },
-  insertPhotosOf(postNo, photoName) {
+  insertPhotosOf(postNo, photoName, res, isLastPhoto) {
     mysqlDB.query(
       'insert into photos(post_no, photo_name) '+
       'values(?,?)',
       [postNo, photoName],
       (err, rows) => {
-        if (err) console.log(err)
-        else if (rows) console.log(rows)
+        if (err) res.send(err)
+        else if (rows && isLastPhoto) res.send(rows)
       }
     )
   }
