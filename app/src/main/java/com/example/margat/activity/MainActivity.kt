@@ -1,6 +1,5 @@
 package com.example.margat.activity
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,7 +13,10 @@ import androidx.viewpager.widget.ViewPager
 import com.example.margat.R
 import com.example.margat.adapter.UploadImagePagerAdapter
 import com.example.margat.adapter.ContentsPagerAdapter
-import com.example.margat.controller.PostingController
+import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
+import com.example.margat.controller.ContentViewPagerController
+import com.example.margat.controller.SocketController
+import com.example.margat.request.PostingRequest
 import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageFragment
 import com.example.margat.fragment.PostingFragment
@@ -22,9 +24,11 @@ import com.example.margat.item.FeedContent
 import com.example.margat.item.MessageContent
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
+import com.example.margat.controller.TabController
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
 import com.yalantis.ucrop.UCrop
+import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_posting.*
 import okhttp3.MediaType
@@ -41,53 +45,32 @@ class MainActivity : AppCompatActivity(),
     FeedFragment.OnListFragmentInteractionListener,
     PostingFragment.OnPostingFragmentInteractionListener{
 
-    private lateinit var mContext: Context
     private lateinit var mTabLayout: TabLayout
 
-    private lateinit var mViewPager: ViewPager
+    private lateinit var mContentsViewPager: ViewPager
     private lateinit var mContentPagerAdapter: ContentsPagerAdapter
 
     private lateinit var mImagePagerAdapter: UploadImagePagerAdapter
+
+    private lateinit var mSocket: Socket
+
+    override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {}
+    override fun onListFragmentInteraction(item: MessageContent.MessageItem?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mContext = applicationContext
+//        var socketController = SocketController(this)
+//        socketController.connectToServerSocket()
 
-        mTabLayout = layout_tab as TabLayout
-        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.ic_home_solid))
-        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.ic_plus_square_regular))
-        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.ic_paper_plane_regular))
-        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.ic_user_regular))
 
-        mViewPager = pager_content
-        mContentPagerAdapter =
-            ContentsPagerAdapter(supportFragmentManager, mTabLayout.tabCount)
-        mViewPager.adapter = mContentPagerAdapter
-        mViewPager.addOnPageChangeListener(TabLayoutOnPageChangeListener(mTabLayout))
+        var tabController = TabController(this)
+        mTabLayout = tabController.createTabLayout()
+        tabController.setEventListenersOnTabsWith(pager_content)
 
-        mTabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                mViewPager.currentItem = tab?.position!!
-                when (tab.position) {
-                    0 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_home_solid)
-                    1 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_plus_square_solid)
-                    2 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_paper_plane_solid)
-                    3 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_user_solid)
-                }
-
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_home_regular)
-                    1 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_plus_square_regular)
-                    2 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_paper_plane_regular)
-                    3 -> tab.icon = applicationContext.getDrawable(R.drawable.ic_user_regular)
-                }
-            }
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+        var contentsViewPagerController = ContentViewPagerController(this)
+        mContentsViewPager = contentsViewPagerController.createContentViewPager(mTabLayout)
 
     }
 
@@ -95,15 +78,11 @@ class MainActivity : AppCompatActivity(),
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1010) {
+            if (requestCode == PICK_FROM_GALLERY) {
                 var sourceUri = data?.data as Uri
                 var filePath = getRealPathFromURI(sourceUri) as String
                 var destinationPath  = "$filePath.tmp"
                 var destinationFile = File(destinationPath)
-
-                println(sourceUri)
-                println(filePath)
-                println(destinationPath)
 
                 while (destinationFile.exists()) {
                     destinationPath+=".tmp"
@@ -137,45 +116,10 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {}
-    override fun onListFragmentInteraction(item: MessageContent.MessageItem?) {}
-
-    fun writePost() {
-        var imageList = ArrayList<MultipartBody.Part>()
-        var imageUriList = mImagePagerAdapter.getImageUrlList()
-
-        for (i in 0 until imageUriList.size) {
-            var file = imageUriList[i].toFile()
-            var requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-            var uploadFile = MultipartBody.Part.createFormData("files", file.path, requestFile)
-            imageList.add(uploadFile)
-        }
-
-        var map = HashMap<String, RequestBody>()
-        var memberNo = getSharedPreferences("loginUser", 0).getInt("no", 0)
-        var postContentBody = RequestBody.create(MediaType.parse("text/plain"), postContent.text.toString())
-        map["memberNo"] = RequestBody.create(MediaType.parse("text/plain"), memberNo.toString())
-        map["postContent"] = postContentBody
-
-        var service = RetrofitAPI().creater.create(PostingController::class.java)
-        service.writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                println("수신 테스트")
-                println(response.body())
-
-                Toast.makeText(applicationContext, "성공적으로 포스팅이 완료되었습니다!", Toast.LENGTH_SHORT).show()
-
-                clearScreen()
-                deleteAllFiles()
-
-                mImagePagerAdapter.clearImages()
-                mImagePagerAdapter.notifyDataSetChanged()
-
-            }
-
-        })
-
+    override fun onFragmentInteraction(item: Any?) {
+        this.mImagePagerAdapter = item as UploadImagePagerAdapter
     }
+
     private fun getRealPathFromURI(fileUri: Uri): String? {
         var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
         var loader = CursorLoader(application, fileUri, proj, null, null, null)
@@ -187,22 +131,12 @@ class MainActivity : AppCompatActivity(),
         return result
     }
 
-    override fun onFragmentInteraction(item: Any?) {
-        this.mImagePagerAdapter = item as UploadImagePagerAdapter
-    }
-
     fun setImage(uri: Uri) {
         mImagePagerAdapter.addItem(uri)
         mImagePagerAdapter.notifyDataSetChanged()
     }
 
-    fun deleteAllFiles() {
-        var imageUriList = mImagePagerAdapter.getImageUrlList()
-        for (i in 0 until imageUriList.size)
-            imageUriList[i].toFile().delete()
-    }
-
-    fun clearScreen() {
+    fun clearInputs() {
         imagePager.setBackgroundResource(R.drawable.transparent_background)
         postContent.text = null
         imageButtonLayout.visibility = View.GONE
@@ -210,6 +144,7 @@ class MainActivity : AppCompatActivity(),
         blankPager.visibility = View.VISIBLE
         imagePager.visibility = View.GONE
     }
+
 
 
 }

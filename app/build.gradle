@@ -68,4 +68,9 @@ dependencies {
 
     // uCrop
     implementation 'com.github.yalantis:ucrop:2.2.4'
+
+    // Socket IO Client
+    implementation ('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }

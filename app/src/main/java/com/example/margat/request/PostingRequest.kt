@@ -1,4 +1,4 @@
-package com.example.margat.controller
+package com.example.margat.request
 
 import com.example.margat.domain.Post
 import okhttp3.MultipartBody
@@ -7,7 +7,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
-interface PostingController {
+interface PostingRequest {
     @GET("posts/member/{no}")
     fun findAllPostsOf(@Path("no") memberNo:Int): Call<Array<Post>>
 

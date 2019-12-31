@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
-import com.example.margat.controller.MemberController
+import com.example.margat.request.MemberRequest
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.activity_registration.*
 import okhttp3.ResponseBody
@@ -30,7 +30,7 @@ class RegistrationActivity : AppCompatActivity() {
 
             }
 
-            var service = RetrofitAPI().creater.create(MemberController::class.java)
+            var service = RetrofitAPI().creater.create(MemberRequest::class.java)
             service.insert(member).enqueue(object: Callback<ResponseBody>{
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

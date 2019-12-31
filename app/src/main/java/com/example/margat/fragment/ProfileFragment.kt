@@ -18,8 +18,8 @@ import com.example.margat.activity.LoginActivity
 import com.example.margat.adapter.MyPhotoRecyclerAdapter
 import com.example.margat.config.WebConfig.Companion.ipAddress
 import com.example.margat.config.WebConfig.Companion.portNo
-import com.example.margat.controller.FollowingController
-import com.example.margat.controller.PostingController
+import com.example.margat.request.FollowingRequest
+import com.example.margat.request.PostingRequest
 import com.example.margat.domain.Following
 import com.example.margat.domain.Post
 import com.example.margat.item.MyPhotoItem
@@ -97,7 +97,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setFollowingsAndFollowers(info: SharedPreferences) {
-        var followingController = RetrofitAPI().creater.create(FollowingController::class.java)
+        var followingController = RetrofitAPI().creater.create(FollowingRequest::class.java)
 
         var memberNo = info.getInt("no", 0)
 
@@ -130,7 +130,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setPostPhotosBy(info: SharedPreferences) {
-        var postingController = RetrofitAPI().creater.create(PostingController::class.java)
+        var postingController = RetrofitAPI().creater.create(PostingRequest::class.java)
 
         postingController.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {

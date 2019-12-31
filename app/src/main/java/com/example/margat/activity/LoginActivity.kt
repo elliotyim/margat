@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
-import com.example.margat.controller.MemberController
+import com.example.margat.request.MemberRequest
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.activity_login.*
@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
                 password = password_input.text.toString()
             }
 
-            var controller = RetrofitAPI().creater.create(MemberController::class.java)
+            var controller = RetrofitAPI().creater.create(MemberRequest::class.java)
             checkEmailOf(member, controller)
         }
 
@@ -45,8 +45,8 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun checkEmailOf(member: Member, controller: MemberController) {
-        controller.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailOf(member: Member, request: MemberRequest) {
+        request.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -54,13 +54,13 @@ class LoginActivity : AppCompatActivity() {
                             "로그인 실패: 이메일 틀립니다!", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    checkEmailAndPasswordOf(member, controller)
+                    checkEmailAndPasswordOf(member, request)
                 }
             }
         })
     }
-    private fun checkEmailAndPasswordOf(member: Member, controller: MemberController) {
-        controller.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailAndPasswordOf(member: Member, request: MemberRequest) {
+        request.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
                 password = info.getString("password", "").toString()
             }
 
-            var controller = RetrofitAPI().creater.create(MemberController::class.java)
+            var controller = RetrofitAPI().creater.create(MemberRequest::class.java)
             checkEmailAndPasswordOf(member, controller)
         }
     }

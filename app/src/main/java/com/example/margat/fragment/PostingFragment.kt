@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager
 import com.example.margat.R
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.UploadImagePagerAdapter
+import com.example.margat.controller.PostController
 import kotlinx.android.synthetic.main.fragment_posting.*
 
 class PostingFragment : Fragment() {
@@ -24,6 +25,8 @@ class PostingFragment : Fragment() {
     private var mContainer: ViewGroup? = null
 
     private var mAdapter: UploadImagePagerAdapter? = null
+
+    private lateinit var mPostController: PostController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +42,8 @@ class PostingFragment : Fragment() {
         viewPager = imagePager
         mAdapter = UploadImagePagerAdapter(fragmentManager!!)
         viewPager.adapter = mAdapter
+
+        mPostController = PostController(activity as MainActivity, mAdapter!!)
 
         initializePostingFragment(mAdapter)
         imagePickButton.setOnClickListener {
@@ -57,16 +62,15 @@ class PostingFragment : Fragment() {
                     Toast.makeText(activity!!, "적어도 한 개 이상의 사진을 등록해주세요!", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
-                    var main = activity as MainActivity
-                    main.writePost()
+                    mPostController.writePost()
                 }
             }
         }
 
         clearButton.setOnClickListener {
             var main = activity as MainActivity
-            main.clearScreen()
-            main.deleteAllFiles()
+            main.clearInputs()
+            mPostController.deleteAllFiles()
             mAdapter!!.clearImages()
         }
 
