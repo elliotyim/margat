@@ -1,5 +1,4 @@
 const mysqlDB = require('../mysql_config/mysql-db');
-const async = require('async')
 const photoService = require('./photo_service')
 
 module.exports = {

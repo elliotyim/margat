@@ -19,7 +19,7 @@ module.exports = {
       [postNo, photoName],
       (err, rows) => {
         if (err) res.send(err)
-        else if (rows && isLastPhoto) res.send(rows)
+        else if (isLastPhoto && rows) res.send(rows)
       }
     )
   }
