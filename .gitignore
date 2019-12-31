@@ -35,3 +35,5 @@ package-lock.json
 *.ear
 hs_err_pid*
 
+server_dir/upload/
+server_dir/socket.io-client
