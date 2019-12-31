@@ -34,7 +34,6 @@ class MyPhotoRecyclerAdapter: RecyclerView.Adapter<ViewHolder> {
             .load(item.photoUri)
             .into(holder.photo)
 
-
     }
 
     override fun getItemCount(): Int {
