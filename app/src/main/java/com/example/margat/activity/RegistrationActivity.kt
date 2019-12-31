@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.domain.Member
 import com.example.margat.request.MemberRequest
+import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.activity_registration.*
 import okhttp3.ResponseBody
@@ -27,16 +28,10 @@ class RegistrationActivity : AppCompatActivity() {
                 password = passwordInput.text.toString()
                 email = emailInput.text.toString()
                 tel = telInput.text.toString()
-
             }
 
-            var service = RetrofitAPI().creater.create(MemberRequest::class.java)
-            service.insert(member).enqueue(object: Callback<ResponseBody>{
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(applicationContext, "통신 오류!", Toast.LENGTH_SHORT).show()
-                }
-
+            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
+            memberRequest.insert(member).enqueue(object: MyCallback<ResponseBody>() {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.code() == 200) {
                         Toast.makeText(applicationContext, "회원가입이 완료되었습니다!", Toast.LENGTH_SHORT).show()
@@ -47,11 +42,7 @@ class RegistrationActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                 }
-
             })
-
         }
-
-
     }
 }

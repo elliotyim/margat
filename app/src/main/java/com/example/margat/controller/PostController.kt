@@ -1,15 +1,16 @@
 package com.example.margat.controller
 
 import android.net.Uri
-import android.provider.MediaStore
+import android.view.View
 import android.widget.Toast
 import androidx.core.net.toFile
-import androidx.loader.content.CursorLoader
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.UploadImagePagerAdapter
+import com.example.margat.fragment.PostingFragment
 import com.example.margat.request.PostingRequest
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.fragment_posting.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -21,14 +22,21 @@ import retrofit2.Response
 class PostController {
 
     var mActivity: MainActivity
-    private var mImagePagerAdapter: UploadImagePagerAdapter
+    private lateinit var mPostingFragment: PostingFragment
+    private lateinit var mImagePagerAdapter: UploadImagePagerAdapter
 
-    constructor(mainActivity: MainActivity, mImagePagerAdapter: UploadImagePagerAdapter) {
+    constructor(mainActivity: MainActivity) {
         this.mActivity = mainActivity
-        this.mImagePagerAdapter = mImagePagerAdapter
     }
 
-    fun writePost() {
+    fun loadInitialDependencies (
+        postingFragment: PostingFragment,
+        imagePagerAdapter: UploadImagePagerAdapter) {
+        this.mPostingFragment = postingFragment
+        this.mImagePagerAdapter = imagePagerAdapter
+    }
+
+    fun writePostWith() {
         var imageList = ArrayList<MultipartBody.Part>()
         var imageUriList = mImagePagerAdapter.getImageUrlList()
 
@@ -49,7 +57,7 @@ class PostController {
         var request = RetrofitAPI().creater.create(PostingRequest::class.java)
         request.writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                mActivity.clearInputs()
+                mPostingFragment.clearInputs()
                 deleteAllFiles()
 
                 mImagePagerAdapter.clearImages()
@@ -66,5 +74,24 @@ class PostController {
             imageUriList[i].toFile().delete()
     }
 
+    fun setImage(uri: Uri) {
+        mImagePagerAdapter.addItem(uri)
+        mImagePagerAdapter.notifyDataSetChanged()
+
+        mImagePagerAdapter.instantiateItem(mActivity.imagePager,0)
+        mActivity.blankPager.visibility = View.GONE
+        mActivity.imagePager.visibility = View.VISIBLE
+    }
+
+    fun cropImage(newUri: Uri, destinationUri: Uri) {
+        if (mActivity.imagePager.background != null)
+            mActivity.imagePager.setBackgroundResource(0)
+        mActivity.imageButtonLayout.visibility = View.VISIBLE
+
+        UCrop.of(newUri, destinationUri)
+            .withAspectRatio(1F, 1F)
+            .withMaxResultSize(500, 500)
+            .start(mActivity)
+    }
 
 }

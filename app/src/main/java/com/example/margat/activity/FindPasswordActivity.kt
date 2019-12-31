@@ -25,13 +25,13 @@ class FindPasswordActivity : AppCompatActivity() {
                 email = emailInput.text.toString()
             }
 
-            var controller = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkNameAndEmailOf(member, controller)
+            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
+            checkNameAndEmailOf(member, memberRequest)
         }
     }
 
-    private fun checkNameAndEmailOf(member: Member, request: MemberRequest) {
-        request.findMemberByNameAndEmail(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkNameAndEmailOf(member: Member, memberRequest: MemberRequest) {
+        memberRequest.findMemberByNameAndEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(
                 call: Call<Array<Member>>,
                 response: Response<Array<Member>>
@@ -42,7 +42,7 @@ class FindPasswordActivity : AppCompatActivity() {
                             "해당하는 회원이 없습니다!", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    changePasswordOf(member, request)
+                    changePasswordOf(member, memberRequest)
                 }
             }
 
@@ -51,9 +51,9 @@ class FindPasswordActivity : AppCompatActivity() {
 
     private fun changePasswordOf(
         member: Member,
-        request: MemberRequest
+        memberRequest: MemberRequest
     ) {
-        request.sendRandomPasswordAt(member).enqueue(object: MyCallback<ResponseBody>() {
+        memberRequest.sendRandomPasswordAt(member).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Toast.makeText(applicationContext, "임시비밀번호가 메일로 전송되었습니다!", Toast.LENGTH_SHORT).show()
             }

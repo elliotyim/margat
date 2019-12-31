@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.example.margat.fragment.FeedFragment
-import com.example.margat.fragment.ProfileFragment
 import com.example.margat.fragment.MessageFragment
 import com.example.margat.fragment.PostingFragment
+import com.example.margat.fragment.ProfileFragment
 
 class ContentsPagerAdapter: FragmentStatePagerAdapter {
     private var mPageCount: Int

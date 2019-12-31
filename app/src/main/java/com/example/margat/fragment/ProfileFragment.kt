@@ -97,11 +97,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setFollowingsAndFollowers(info: SharedPreferences) {
-        var followingController = RetrofitAPI().creater.create(FollowingRequest::class.java)
+        var followingRequest = RetrofitAPI().creater.create(FollowingRequest::class.java)
 
         var memberNo = info.getInt("no", 0)
 
-        followingController.findAllFollowingsOf(memberNo).enqueue(object: MyCallback<Array<Following>>() {
+        followingRequest.findAllFollowingsOf(memberNo).enqueue(object: MyCallback<Array<Following>>() {
             override fun onResponse(
                 call: Call<Array<Following>>,
                 response: Response<Array<Following>>
@@ -130,9 +130,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setPostPhotosBy(info: SharedPreferences) {
-        var postingController = RetrofitAPI().creater.create(PostingRequest::class.java)
+        var postingRequest = RetrofitAPI().creater.create(PostingRequest::class.java)
 
-        postingController.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
+        postingRequest.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
                 if (response.code() == 200) {
                     var result = response.body()

@@ -14,14 +14,16 @@ class ContentViewPagerController {
         mActivity = mainActivity
     }
 
-    fun createContentViewPager(mTabLayout: TabLayout): ViewPager {
+    fun createContentViewPagerWith(mTabLayout: TabLayout): ViewPager {
         var mContentsViewPager = mActivity.pager_content
         var mContentPagerAdapter =
             ContentsPagerAdapter(mActivity.supportFragmentManager, mTabLayout.tabCount)
+
         mContentsViewPager.adapter = mContentPagerAdapter
         mContentsViewPager.addOnPageChangeListener(
             TabLayout.TabLayoutOnPageChangeListener(mTabLayout)
         )
+
         return mContentsViewPager!!
     }
 }

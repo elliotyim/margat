@@ -34,8 +34,8 @@ class LoginActivity : AppCompatActivity() {
                 password = password_input.text.toString()
             }
 
-            var controller = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkEmailOf(member, controller)
+            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
+            checkEmailOf(member, memberRequest)
         }
 
         signUpText.setOnClickListener{
@@ -45,8 +45,8 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun checkEmailOf(member: Member, request: MemberRequest) {
-        request.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailOf(member: Member, memberRequest: MemberRequest) {
+        memberRequest.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -54,13 +54,13 @@ class LoginActivity : AppCompatActivity() {
                             "로그인 실패: 이메일 틀립니다!", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    checkEmailAndPasswordOf(member, request)
+                    checkEmailAndPasswordOf(member, memberRequest)
                 }
             }
         })
     }
-    private fun checkEmailAndPasswordOf(member: Member, request: MemberRequest) {
-        request.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
+    private fun checkEmailAndPasswordOf(member: Member, memberRequest: MemberRequest) {
+        memberRequest.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
             override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
@@ -108,8 +108,8 @@ class LoginActivity : AppCompatActivity() {
                 password = info.getString("password", "").toString()
             }
 
-            var controller = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkEmailAndPasswordOf(member, controller)
+            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
+            checkEmailAndPasswordOf(member, memberRequest)
         }
     }
 

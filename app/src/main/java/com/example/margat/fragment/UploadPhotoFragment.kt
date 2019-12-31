@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.image_page_item.*
 
 class UploadPhotoFragment: Fragment() {
 
-    var mNum: Int = 0
+    private var mNum: Int = 0
     var uri: Uri? = null
 
     companion object {

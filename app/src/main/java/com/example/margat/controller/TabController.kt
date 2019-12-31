@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class TabController {
 
-    lateinit var mTabLayout: TabLayout
+    private lateinit var mTabLayout: TabLayout
     var mActivity: MainActivity
 
     constructor(mainActivity: MainActivity) {

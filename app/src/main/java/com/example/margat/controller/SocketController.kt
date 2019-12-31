@@ -13,7 +13,6 @@ class SocketController {
 
     constructor(mainActivity: MainActivity) {
         this.mActivity = mainActivity
-        connectToServerSocket()
     }
 
     fun connectToServerSocket() {

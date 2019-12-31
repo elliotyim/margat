@@ -15,24 +15,23 @@ import androidx.viewpager.widget.ViewPager
 import com.example.margat.R
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.UploadImagePagerAdapter
+import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
 import com.example.margat.controller.PostController
 import kotlinx.android.synthetic.main.fragment_posting.*
 
 class PostingFragment : Fragment() {
     private var mListener: OnPostingFragmentInteractionListener? = null
 
+    private lateinit var mContainer: ViewGroup
     private lateinit var viewPager: ViewPager
-    private var mContainer: ViewGroup? = null
-
-    private var mAdapter: UploadImagePagerAdapter? = null
-
+    private lateinit var mImageAdapter: UploadImagePagerAdapter
     private lateinit var mPostController: PostController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContainer = container
+        mContainer = container!!
         return inflater.inflate(R.layout.fragment_posting, container, false)
     }
 
@@ -40,38 +39,35 @@ class PostingFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewPager = imagePager
-        mAdapter = UploadImagePagerAdapter(fragmentManager!!)
-        viewPager.adapter = mAdapter
+        mImageAdapter = UploadImagePagerAdapter(fragmentManager!!)
+        viewPager.adapter = mImageAdapter
 
-        mPostController = PostController(activity as MainActivity, mAdapter!!)
-
-        initializePostingFragment(mAdapter)
         imagePickButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             intent.type = MediaStore.Images.Media.CONTENT_TYPE
-            activity?.startActivityForResult(intent, 1010)
+            activity!!.startActivityForResult(intent, PICK_FROM_GALLERY)
         }
 
+        mPostController.loadInitialDependencies(this, mImageAdapter!!)
         postButton.setOnClickListener {
             when {
-                postContent.text == null -> {
+                postContent.text.toString().replace(" ", "") == "" -> {
                     Toast.makeText(activity!!, "포스팅 내용을 입력해주세요!", Toast.LENGTH_SHORT).show()
                 }
-                mAdapter!!.getImageUrlList().size == 0 -> {
+                mImageAdapter!!.getImageUrlList().size == 0 -> {
                     Toast.makeText(activity!!, "적어도 한 개 이상의 사진을 등록해주세요!", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
-                    mPostController.writePost()
+                    mPostController.writePostWith()
                 }
             }
         }
 
         clearButton.setOnClickListener {
-            var main = activity as MainActivity
-            main.clearInputs()
+            clearInputs()
             mPostController.deleteAllFiles()
-            mAdapter!!.clearImages()
+            mImageAdapter!!.clearImages()
         }
 
         postContent.onFocusChangeListener = View.OnFocusChangeListener {v, hasFocus ->
@@ -94,6 +90,8 @@ class PostingFragment : Fragment() {
         super.onAttach(context)
         if (context is OnPostingFragmentInteractionListener) {
             mListener = context
+            mPostController = (mListener as MainActivity).getPostController()
+
         } else {
             throw RuntimeException("$context must implement OnPostingFragmentInteractionListener")
         }
@@ -104,12 +102,15 @@ class PostingFragment : Fragment() {
         mListener = null
     }
 
-    private fun initializePostingFragment(item: Any?) {
-        mListener?.onFragmentInteraction(item)
-    }
+    interface OnPostingFragmentInteractionListener {}
 
-    interface OnPostingFragmentInteractionListener {
-        fun onFragmentInteraction(item: Any?)
+    fun clearInputs() {
+        imagePager.setBackgroundResource(R.drawable.transparent_background)
+        postContent.text = null
+        imageButtonLayout.visibility = View.GONE
+
+        blankPager.visibility = View.VISIBLE
+        imagePager.visibility = View.GONE
     }
 
 }
