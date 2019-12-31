@@ -12,8 +12,8 @@ import androidx.core.net.toFile
 import androidx.loader.content.CursorLoader
 import androidx.viewpager.widget.ViewPager
 import com.example.margat.R
+import com.example.margat.adapter.UploadImagePagerAdapter
 import com.example.margat.adapter.ContentsPagerAdapter
-import com.example.margat.adapter.ImagePagerAdapter
 import com.example.margat.controller.PostingController
 import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageFragment
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var mViewPager: ViewPager
     private lateinit var mContentPagerAdapter: ContentsPagerAdapter
 
-    private lateinit var mImagePagerAdapter: ImagePagerAdapter
+    private lateinit var mImagePagerAdapter: UploadImagePagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,8 +125,6 @@ class MainActivity : AppCompatActivity(),
             } else if (requestCode == UCrop.REQUEST_CROP) {
                 var resultUri = UCrop.getOutput(data!!)!!
                 setImage(resultUri)
-                println("UCrop에서 성공적으로 넘어옴!")
-                println(resultUri)
 
                 mImagePagerAdapter.instantiateItem(imagePager,0)
                 blankPager.visibility = View.GONE
@@ -136,10 +134,6 @@ class MainActivity : AppCompatActivity(),
         if (resultCode == UCrop.RESULT_ERROR && requestCode == UCrop.REQUEST_CROP){
             throw UCrop.getError(data!!)!!
         }
-
-        println("결과코드는: $resultCode")
-        println("리퀘스트코드는: $requestCode")
-//        writePost(filePath)
 
     }
 
@@ -171,19 +165,11 @@ class MainActivity : AppCompatActivity(),
 
                 Toast.makeText(applicationContext, "성공적으로 포스팅이 완료되었습니다!", Toast.LENGTH_SHORT).show()
 
-                imagePager.setBackgroundResource(R.drawable.transparent_background)
-                postContent.text = null
-                imageButtonLayout.visibility = View.GONE
-
-                var imageUriList = mImagePagerAdapter.getImageUrlList()
-                for (i in 0 until imageUriList.size)
-                    imageUriList[i].toFile().delete()
+                clearScreen()
+                deleteAllFiles()
 
                 mImagePagerAdapter.clearImages()
                 mImagePagerAdapter.notifyDataSetChanged()
-
-                blankPager.visibility = View.VISIBLE
-                imagePager.visibility = View.GONE
 
             }
 
@@ -202,12 +188,27 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(item: Any?) {
-        this.mImagePagerAdapter = item as ImagePagerAdapter
+        this.mImagePagerAdapter = item as UploadImagePagerAdapter
     }
 
     fun setImage(uri: Uri) {
-        mImagePagerAdapter.addImage(uri)
+        mImagePagerAdapter.addItem(uri)
         mImagePagerAdapter.notifyDataSetChanged()
+    }
+
+    fun deleteAllFiles() {
+        var imageUriList = mImagePagerAdapter.getImageUrlList()
+        for (i in 0 until imageUriList.size)
+            imageUriList[i].toFile().delete()
+    }
+
+    fun clearScreen() {
+        imagePager.setBackgroundResource(R.drawable.transparent_background)
+        postContent.text = null
+        imageButtonLayout.visibility = View.GONE
+
+        blankPager.visibility = View.VISIBLE
+        imagePager.visibility = View.GONE
     }
 
 
