@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
@@ -12,7 +13,7 @@ import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageFragment
 import com.example.margat.fragment.PostingFragment
 import com.example.margat.item.FeedContent
-import com.example.margat.item.MessageContent
+import com.example.margat.item.MessageItem
 import com.example.margat.util.UriParser
 import com.yalantis.ucrop.UCrop
 import io.socket.client.Socket
@@ -28,8 +29,10 @@ class MainActivity : AppCompatActivity(),
     private var mPostController: PostController? = null
     private lateinit var mSocket: Socket
 
-    override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {}
-    override fun onListFragmentInteraction(item: MessageContent.MessageItem?) {}
+    override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {
+        Toast.makeText(this, "클릭한 아이템의 내용은: ${item!!.content}", Toast.LENGTH_SHORT).show()
+    }
+    override fun onListFragmentInteraction(item: MessageItem?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +46,11 @@ class MainActivity : AppCompatActivity(),
         var mTabLayout = tabController.createTabLayout()
         tabController.setEventListenersOnTabsWith(pager_content)
 
+        var fragmentManager = supportFragmentManager
         var contentsViewPagerController = ContentViewPagerController(this)
-        contentsViewPagerController.createContentViewPagerWith(mTabLayout)
+        contentsViewPagerController.createContentViewPagerWith(fragmentManager, mTabLayout)
 
         mPostController = PostController(this)
-
-        var messageController = MessageController(this)
-
 
     }
 
@@ -86,7 +87,5 @@ class MainActivity : AppCompatActivity(),
     fun getPostController(): PostController {
         return mPostController!!
     }
-
-
 
 }

@@ -20,71 +20,13 @@ import com.example.margat.controller.PostController
 import kotlinx.android.synthetic.main.fragment_posting.*
 
 class PostingFragment : Fragment() {
+    interface OnPostingFragmentInteractionListener
     private var mListener: OnPostingFragmentInteractionListener? = null
 
     private lateinit var mContainer: ViewGroup
-    private lateinit var viewPager: ViewPager
+    private lateinit var mViewPager: ViewPager
     private lateinit var mImageAdapter: UploadImagePagerAdapter
     private lateinit var mPostController: PostController
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        mContainer = container!!
-        return inflater.inflate(R.layout.fragment_posting, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewPager = imagePager
-        mImageAdapter = UploadImagePagerAdapter(fragmentManager!!)
-        viewPager.adapter = mImageAdapter
-
-        imagePickButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            intent.type = MediaStore.Images.Media.CONTENT_TYPE
-            activity!!.startActivityForResult(intent, PICK_FROM_GALLERY)
-        }
-
-        mPostController.loadInitialDependencies(this, mImageAdapter!!)
-        postButton.setOnClickListener {
-            when {
-                postContent.text.toString().replace(" ", "") == "" -> {
-                    Toast.makeText(activity!!, "포스팅 내용을 입력해주세요!", Toast.LENGTH_SHORT).show()
-                }
-                mImageAdapter!!.getImageUrlList().size == 0 -> {
-                    Toast.makeText(activity!!, "적어도 한 개 이상의 사진을 등록해주세요!", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    mPostController.writePostWith()
-                }
-            }
-        }
-
-        clearButton.setOnClickListener {
-            clearInputs()
-            mPostController.deleteAllFiles()
-            mImageAdapter!!.clearImages()
-        }
-
-        postContent.onFocusChangeListener = View.OnFocusChangeListener {v, hasFocus ->
-            if (!hasFocus) {
-                postContent.clearFocus()
-                var inputMethodManager =
-                    activity!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
-            }
-        }
-        prevImageButton.setOnClickListener {
-            viewPager.currentItem--
-        }
-        nextImageButton.setOnClickListener {
-            viewPager.currentItem++
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -102,13 +44,88 @@ class PostingFragment : Fragment() {
         mListener = null
     }
 
-    interface OnPostingFragmentInteractionListener {}
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mContainer = container!!
+        return inflater.inflate(R.layout.fragment_posting, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        mViewPager = imagePager
+        mImageAdapter = UploadImagePagerAdapter(fragmentManager!!)
+        mViewPager.adapter = mImageAdapter
+
+        mPostController.loadInitialDependencies(this, mImageAdapter!!)
+
+        setOnClickListenerToImagePickButton()
+        setOnClickListenerToPostButton()
+        setOnClickListenerToOnClearButton()
+        setOnFocusChangeListenerToEditText()
+        setOnClickListenerToPrevNextImageButton()
+    }
+
+    private fun setOnClickListenerToImagePickButton() {
+        imagePickButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            intent.type = MediaStore.Images.Media.CONTENT_TYPE
+            activity!!.startActivityForResult(intent, PICK_FROM_GALLERY)
+        }
+    }
+
+    private fun setOnClickListenerToPostButton() {
+        postButton.setOnClickListener {
+            when {
+                postContent.text.toString().replace(" ", "") == "" -> {
+                    Toast.makeText(activity!!, "포스팅 내용을 입력해주세요!", Toast.LENGTH_SHORT).show()
+                }
+                mImageAdapter!!.getImageUrlList().size == 0 -> {
+                    Toast.makeText(activity!!, "적어도 한 개 이상의 사진을 등록해주세요!", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    mPostController.writePostWith()
+                }
+            }
+        }
+    }
+
+    private fun setOnClickListenerToOnClearButton() {
+        clearButton.setOnClickListener {
+            clearInputs()
+            mPostController.deleteAllFiles()
+            mImageAdapter!!.clearImages()
+        }
+    }
+
+    private fun setOnFocusChangeListenerToEditText() {
+        postContent.onFocusChangeListener = View.OnFocusChangeListener {v, hasFocus ->
+            if (!hasFocus) {
+                postContent.clearFocus()
+                var inputMethodManager =
+                    activity!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
+            }
+        }
+    }
+
+    private fun setOnClickListenerToPrevNextImageButton() {
+        prevImageButton.setOnClickListener {
+            mViewPager.currentItem--
+        }
+        nextImageButton.setOnClickListener {
+            mViewPager.currentItem++
+        }
+    }
 
     fun clearInputs() {
         imagePager.setBackgroundResource(R.drawable.transparent_background)
+
         postContent.text = null
         imageButtonLayout.visibility = View.GONE
-
         blankPager.visibility = View.VISIBLE
         imagePager.visibility = View.GONE
     }

@@ -1,6 +1,8 @@
 package com.example.margat.util
 
 import com.example.margat.config.WebConfig
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,9 +11,11 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitAPI: WebConfig() {
 
+    val gson: Gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
+
     val creater: Retrofit = Retrofit.Builder()
         .baseUrl("${ipAddress}${portNo}")
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .client(createOkHttpClient())
         .build()
 

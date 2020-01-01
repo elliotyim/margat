@@ -36,9 +36,7 @@ class MyPhotoRecyclerAdapter: RecyclerView.Adapter<ViewHolder> {
 
     }
 
-    override fun getItemCount(): Int {
-        return mData.size
-    }
+    override fun getItemCount(): Int = mData.size
 
     inner class ViewHolder: RecyclerView.ViewHolder {
         var photo: ImageView

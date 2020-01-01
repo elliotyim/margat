@@ -3,51 +3,29 @@ package com.example.margat.fragment
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.margat.R
+import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.MyMessageRecyclerViewAdapter
+import com.example.margat.controller.MessageController
 
-import com.example.margat.item.MessageContent
-import com.example.margat.item.MessageContent.MessageItem
+import com.example.margat.item.MessageItem
+import kotlinx.android.synthetic.main.fragment_message_list.*
 
 class MessageFragment : Fragment() {
 
-    private var columnCount = 1
     private var listener: OnListFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mAdapter: MyMessageRecyclerViewAdapter
+    private var mList = ArrayList<MessageItem>()
 
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_message_list, container, false)
-
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter =
-                    MyMessageRecyclerViewAdapter(
-                        MessageContent.ITEMS,
-                        listener
-                    )
-            }
-        }
-        return view
+    interface OnListFragmentInteractionListener {
+        fun onListFragmentInteraction(item: MessageItem?)
     }
 
     override fun onAttach(context: Context) {
@@ -64,19 +42,28 @@ class MessageFragment : Fragment() {
         listener = null
     }
 
-    interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: MessageItem?)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_message_list, container, false)
     }
 
-    companion object {
-        const val ARG_COLUMN_COUNT = "column-count"
+    override fun onStart() {
+        super.onStart()
 
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            MessageFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
+
+        mRecyclerView = messageListRecycler
+        mAdapter = MyMessageRecyclerViewAdapter(mList, activity!!.applicationContext)
+        mRecyclerView.adapter = mAdapter
+
+        var messageController = MessageController(listener as MainActivity, mList, mAdapter)
+        messageController.loadMessageList()
+
+        mRecyclerView.layoutManager = LinearLayoutManager(this.context)
     }
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.margat.controller
 
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.ContentsPagerAdapter
@@ -14,10 +15,13 @@ class ContentViewPagerController {
         mActivity = mainActivity
     }
 
-    fun createContentViewPagerWith(mTabLayout: TabLayout): ViewPager {
+    fun createContentViewPagerWith(
+        fragmentManager: FragmentManager,
+        mTabLayout: TabLayout
+    ): ViewPager {
         var mContentsViewPager = mActivity.pager_content
         var mContentPagerAdapter =
-            ContentsPagerAdapter(mActivity.supportFragmentManager, mTabLayout.tabCount)
+            ContentsPagerAdapter(fragmentManager, mTabLayout.tabCount)
 
         mContentsViewPager.adapter = mContentPagerAdapter
         mContentsViewPager.addOnPageChangeListener(

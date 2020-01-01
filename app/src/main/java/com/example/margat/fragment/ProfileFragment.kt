@@ -31,7 +31,7 @@ import retrofit2.Response
 
 
 class ProfileFragment : Fragment() {
-    private lateinit var mRecyclerVIew: RecyclerView
+    private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
     private var mList = ArrayList<MyPhotoItem>()
 
@@ -47,11 +47,11 @@ class ProfileFragment : Fragment() {
         mContext = activity!!.applicationContext
         loadUserInfo()
 
-        mRecyclerVIew = myPhotosRecycler
+        mRecyclerView = myPhotosRecycler
         mAdapter = MyPhotoRecyclerAdapter(mList)
-        mRecyclerVIew.adapter = mAdapter
+        mRecyclerView.adapter = mAdapter
 
-        mRecyclerVIew.layoutManager = GridLayoutManager(this.context, 3)
+        mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)
 
         logoutButton.setOnClickListener {
             var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)

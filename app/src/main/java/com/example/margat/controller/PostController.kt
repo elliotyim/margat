@@ -57,13 +57,15 @@ class PostController {
         var request = RetrofitAPI().creater.create(PostingRequest::class.java)
         request.writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                deleteAllFiles()
+                if (response.code() == 200) {
+                    deleteAllFiles()
 
-                mPostingFragment.clearInputs()
-                mImagePagerAdapter.clearImages()
-                mImagePagerAdapter.notifyDataSetChanged()
+                    mPostingFragment.clearInputs()
+                    mImagePagerAdapter.clearImages()
+                    mImagePagerAdapter.notifyDataSetChanged()
 
-                Toast.makeText(mActivity, "성공적으로 포스팅이 완료되었습니다!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mActivity, "성공적으로 포스팅이 완료되었습니다!", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
