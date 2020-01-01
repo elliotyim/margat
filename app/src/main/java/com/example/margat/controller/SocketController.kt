@@ -17,7 +17,7 @@ class SocketController {
 
     fun connectToServerSocket() {
         try {
-            mSocket = IO.socket("${WebConfig.ipAddress}:${WebConfig.portNo}")
+            mSocket = IO.socket("${WebConfig.ipAddress}${WebConfig.portNo}")
             mSocket.connect()
         } catch (e: URISyntaxException) {
             e.printStackTrace()
