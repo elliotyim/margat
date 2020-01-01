@@ -1,15 +1,13 @@
 package com.example.margat.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
 import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
-import com.example.margat.controller.ContentViewPagerController
-import com.example.margat.controller.PostController
-import com.example.margat.controller.SocketController
-import com.example.margat.controller.TabController
+import com.example.margat.controller.*
 import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageFragment
 import com.example.margat.fragment.PostingFragment
@@ -50,28 +48,30 @@ class MainActivity : AppCompatActivity(),
 
         mPostController = PostController(this)
 
+        var messageController = MessageController(this)
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_FROM_GALLERY) {
-                var sourceUri = data?.data as Uri
-                var filePath = UriParser.getRealPathFromURI(this, sourceUri) as String
+        if (resultCode == Activity.RESULT_OK && requestCode == PICK_FROM_GALLERY) {
+            var sourceUri = data?.data as Uri
+            var filePath = UriParser.getRealPathFromURI(this, sourceUri) as String
 
-                var destinationPath  = "$filePath.tmp"
-                var destinationFile = File(destinationPath)
+            var destinationPath  = "$filePath.tmp"
+            var destinationFile = File(destinationPath)
 
-                while (destinationFile.exists())
-                    destinationFile = File("$destinationPath.tmp")
+            while (destinationFile.exists())
+                destinationFile = File("$destinationPath.tmp")
 
-                mPostController!!.cropImage(Uri.fromFile(File(filePath)), Uri.fromFile(destinationFile))
+            mPostController!!.cropImage(Uri.fromFile(File(filePath)), Uri.fromFile(destinationFile))
 
-            } else if (requestCode == UCrop.REQUEST_CROP) {
-                mPostController!!.setImage(UCrop.getOutput(data!!)!!)
-            }
+        } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            mPostController!!.setImage(UCrop.getOutput(data!!)!!)
         }
+
         if (resultCode == UCrop.RESULT_ERROR && requestCode == UCrop.REQUEST_CROP)
             throw UCrop.getError(data!!)!!
 
@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity(),
     override fun onDestroy() {
         super.onDestroy()
         mSocket.close()
+        mPostController!!.deleteAllFiles()
     }
 
     fun getPostController(): PostController {

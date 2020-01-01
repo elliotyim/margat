@@ -57,9 +57,9 @@ class PostController {
         var request = RetrofitAPI().creater.create(PostingRequest::class.java)
         request.writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                mPostingFragment.clearInputs()
                 deleteAllFiles()
 
+                mPostingFragment.clearInputs()
                 mImagePagerAdapter.clearImages()
                 mImagePagerAdapter.notifyDataSetChanged()
 

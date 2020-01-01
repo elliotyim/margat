@@ -89,7 +89,7 @@ class ProfileFragment : Fragment() {
     private fun setProfilePhotoBy(info: SharedPreferences) {
         var profilePhotoFileName = info.getString("profilePhoto", "").toString()
         Glide.with(mContext)
-            .load("${ipAddress}:${portNo}/upload/profile_photos/${profilePhotoFileName}")
+            .load("${ipAddress}${portNo}/upload/profile_photos/${profilePhotoFileName}")
             .placeholder(R.drawable.profile_default_circle)
             .into(profilePhoto)
         profilePhoto?.background = ShapeDrawable(OvalShape())
@@ -142,7 +142,7 @@ class ProfileFragment : Fragment() {
 
                     for (i in 1..numberOfPost!!) {
                         var photoName = result!![i-1].photos[0].photoName
-                        addItem("${ipAddress}:${portNo}/upload/photos/${photoName}")
+                        addItem("${ipAddress}${portNo}/upload/photos/${photoName}")
                     }
 
                     mAdapter.notifyDataSetChanged()

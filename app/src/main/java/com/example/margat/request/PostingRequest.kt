@@ -8,11 +8,11 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface PostingRequest {
-    @GET("posts/member/{no}")
+    @GET("/posts/member/{no}")
     fun findAllPostsOf(@Path("no") memberNo:Int): Call<Array<Post>>
 
     @Multipart
-    @POST("post/photos")
+    @POST("/post/photos")
     fun writePostWithPhotos(
         @PartMap map: HashMap<String, RequestBody>,
         @Part files: ArrayList<MultipartBody.Part>

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 class RetrofitAPI: WebConfig() {
 
     val creater: Retrofit = Retrofit.Builder()
-        .baseUrl("${ipAddress}:${portNo}/")
+        .baseUrl("${ipAddress}${portNo}")
         .addConverterFactory(GsonConverterFactory.create())
         .client(createOkHttpClient())
         .build()
