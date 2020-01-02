@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.margat.R
 import com.example.margat.config.WebConfig
-import com.example.margat.fragment.ProfileFragment
-import com.example.margat.item.MessageItem
-import kotlinx.android.synthetic.main.fragment_profile.*
+import com.example.margat.model.MessageItem
 
 class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
 
@@ -31,7 +29,7 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
         var context = parent.context
         var inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        var view = inflater.inflate(R.layout.fragment_message, parent, false)
+        var view = inflater.inflate(R.layout.fragment_message_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -51,6 +49,7 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
             holder.unreadMsgCount.text = item.unreadMsgCount.toString()
         holder.receivedDate.text = item.receivedDate.toString()
         holder.messageContent.text = item.messageContent
+
     }
 
     override fun getItemCount(): Int = mData.size

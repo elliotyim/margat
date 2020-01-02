@@ -1,16 +1,12 @@
 package com.example.margat.controller
 
 import android.content.Context
-import android.widget.Toast
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.MyMessageRecyclerViewAdapter
-import com.example.margat.fragment.ProfileFragment
-import com.example.margat.fragment.ProfileFragment.Companion.mContext
-import com.example.margat.item.MessageItem
+import com.example.margat.model.MessageItem
 import com.example.margat.request.MessageRequest
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import java.text.SimpleDateFormat
@@ -29,6 +25,7 @@ class MessageController {
 
     fun loadMessageList() {
         var info = mActivity.getSharedPreferences("loginUser", 0)
+        println("통신 오류 일수도 있지?")
 
         var messageRequest = RetrofitAPI().creater.create(MessageRequest::class.java)
         messageRequest.findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<Array<MessageItem>>() {

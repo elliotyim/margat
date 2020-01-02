@@ -12,8 +12,8 @@ import android.view.ViewGroup
 import com.example.margat.R
 import com.example.margat.adapter.MyFeedRecyclerViewAdapter
 
-import com.example.margat.item.FeedContent
-import com.example.margat.item.FeedContent.FeedItem
+import com.example.margat.model.FeedContent
+import com.example.margat.model.FeedContent.FeedItem
 
 /**
  * A fragment representing a list of Items.

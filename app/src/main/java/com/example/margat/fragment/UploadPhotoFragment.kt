@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.example.margat.R
-import kotlinx.android.synthetic.main.image_page_item.*
 
 class UploadPhotoFragment: Fragment() {
 

@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
-import com.example.margat.domain.Member
+import com.example.margat.model.Member
 import com.example.margat.request.MemberRequest
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
@@ -23,11 +23,38 @@ class LoginActivity : AppCompatActivity() {
 
         checkIfAutoLoginSet()
 
-        forgotPassword.setOnClickListener{
-            val intent = Intent(applicationContext, FindPasswordActivity::class.java)
-            startActivity(intent)
-        }
+        setOnClickListenerToForgotPasswordButton()
+        setOnclickListenerToSignUpButton()
+        setOnClickListenerToSignInButton()
+    }
 
+    private fun checkIfAutoLoginSet() {
+        var info: SharedPreferences = getSharedPreferences("autoLoginUser", 0)
+
+        if (!info.getString("password", "").equals("")) {
+            var member = Member().apply {
+                email = info.getString("email", "").toString()
+                password = info.getString("password", "").toString()
+            }
+
+            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
+            checkEmailAndPasswordOf(member, memberRequest)
+        }
+    }
+
+    private fun setOnClickListenerToForgotPasswordButton() {
+        forgotPassword.setOnClickListener{
+            startActivity(Intent(applicationContext, FindPasswordActivity::class.java))
+        }
+    }
+
+    private fun setOnclickListenerToSignUpButton() {
+        signUpText.setOnClickListener{
+            startActivity(Intent(applicationContext, RegistrationActivity::class.java))
+        }
+    }
+
+    private fun setOnClickListenerToSignInButton() {
         signin_button.setOnClickListener {
             var member = Member().apply {
                 email = email_input.text.toString()
@@ -36,11 +63,6 @@ class LoginActivity : AppCompatActivity() {
 
             var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
             checkEmailOf(member, memberRequest)
-        }
-
-        signUpText.setOnClickListener{
-            val intent = Intent(applicationContext, RegistrationActivity::class.java)
-            startActivity(intent)
         }
 
     }
@@ -54,6 +76,7 @@ class LoginActivity : AppCompatActivity() {
                             "로그인 실패: 이메일 틀립니다!", Toast.LENGTH_SHORT).show()
                         return
                     }
+
                     checkEmailAndPasswordOf(member, memberRequest)
                 }
             }
@@ -69,8 +92,7 @@ class LoginActivity : AppCompatActivity() {
                         return
                     }
 
-                    if(rememberMe.isChecked)
-                        setAutoLogin(member)
+                    if (rememberMe.isChecked) setAutoLogin(member)
 
                     var name: String? = response.body()!![0].name
                     Toast.makeText(applicationContext,
@@ -89,32 +111,23 @@ class LoginActivity : AppCompatActivity() {
                     }
                     editor.commit()
 
-                    val intent = Intent(applicationContext, MainActivity::class.java)
-                    intent.putExtra("name", name)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
+                    goToMainActivity()
                 }
             }
         })
     }
 
-    private fun checkIfAutoLoginSet() {
-        var info: SharedPreferences = getSharedPreferences("setting", 0)
-
-        if (!info.getString("password", "").equals("")) {
-            var member = Member().apply {
-                email = info.getString("email", "").toString()
-                password = info.getString("password", "").toString()
-            }
-
-            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkEmailAndPasswordOf(member, memberRequest)
-        }
+    private fun goToMainActivity() {
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 
+
+
     private fun setAutoLogin(member: Member) {
-        var info: SharedPreferences = getSharedPreferences("setting", 0)
+        var info: SharedPreferences = getSharedPreferences("autoLoginUser", 0)
         var editor: SharedPreferences.Editor = info.edit()
 
         editor.putString("email", member.email)

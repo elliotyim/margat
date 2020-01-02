@@ -1,6 +1,6 @@
 package com.example.margat.request
 
-import com.example.margat.domain.Member
+import com.example.margat.model.Member
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body

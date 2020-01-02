@@ -20,9 +20,9 @@ import com.example.margat.config.WebConfig.Companion.ipAddress
 import com.example.margat.config.WebConfig.Companion.portNo
 import com.example.margat.request.FollowingRequest
 import com.example.margat.request.PostingRequest
-import com.example.margat.domain.Following
-import com.example.margat.domain.Post
-import com.example.margat.item.MyPhotoItem
+import com.example.margat.model.Following
+import com.example.margat.model.Post
+import com.example.margat.model.MyPhotoItem
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -35,6 +35,10 @@ class ProfileFragment : Fragment() {
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
     private var mList = ArrayList<MyPhotoItem>()
 
+    companion object {
+        lateinit var mContext: Context
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,35 +49,11 @@ class ProfileFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         mContext = activity!!.applicationContext
+
         loadUserInfo()
+        initialiseMyPhotoList()
 
-        mRecyclerView = myPhotosRecycler
-        mAdapter = MyPhotoRecyclerAdapter(mList)
-        mRecyclerView.adapter = mAdapter
-
-        mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)
-
-        logoutButton.setOnClickListener {
-            var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
-            var editor: SharedPreferences.Editor = info.edit()
-            editor.clear()
-            editor.apply()
-
-            val intent = Intent(this.activity, LoginActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        }
-    }
-
-    companion object {
-        lateinit var mContext: Context
-    }
-
-    private fun addItem(photoUri: String) {
-        var item = MyPhotoItem()
-        item.photoUri = photoUri
-        mList.add(item)
+        setOnClickListenerToLogoutButton()
     }
 
     private fun loadUserInfo() {
@@ -83,7 +63,20 @@ class ProfileFragment : Fragment() {
         setProfilePhotoBy(info)
         setFollowingsAndFollowers(info)
         setPostPhotosBy(info)
+    }
 
+    fun initialiseMyPhotoList() {
+        mRecyclerView = myPhotosRecycler
+        mAdapter = MyPhotoRecyclerAdapter(mList)
+        mRecyclerView.adapter = mAdapter
+
+        mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)!!
+    }
+
+    private fun addItem(photoUri: String) {
+        var item = MyPhotoItem()
+        item.photoUri = photoUri
+        mList.add(item)
     }
 
     private fun setProfilePhotoBy(info: SharedPreferences) {
@@ -100,7 +93,6 @@ class ProfileFragment : Fragment() {
         var followingRequest = RetrofitAPI().creater.create(FollowingRequest::class.java)
 
         var memberNo = info.getInt("no", 0)
-
         followingRequest.findAllFollowingsOf(memberNo).enqueue(object: MyCallback<Array<Following>>() {
             override fun onResponse(
                 call: Call<Array<Following>>,
@@ -135,10 +127,11 @@ class ProfileFragment : Fragment() {
         postingRequest.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
             override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
                 if (response.code() == 200) {
-                    var result = response.body()
-                    var numberOfPost = result?.size
-                    setNumberOfPosts(numberOfPost)
                     if (response.body().isNullOrEmpty()) {return}
+
+                    var result = response.body()
+                    var numberOfPost = result!!.size
+                    setNumberOfPosts(numberOfPost)
 
                     for (i in 1..numberOfPost!!) {
                         var photoName = result!![i-1].photos[0].photoName
@@ -154,5 +147,19 @@ class ProfileFragment : Fragment() {
 
     private fun setNumberOfPosts(size: Int?) {
         if (numberOfPost != null) numberOfPost.text = size.toString()
+    }
+
+    private fun setOnClickListenerToLogoutButton() {
+        logoutButton.setOnClickListener {
+            var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
+            var editor: SharedPreferences.Editor = info.edit()
+            editor.clear()
+            editor.apply()
+
+            val intent = Intent(this.activity, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
     }
 }

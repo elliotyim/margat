@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitAPI: WebConfig() {
 
-    val gson: Gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
+    private val gson: Gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
 
     val creater: Retrofit = Retrofit.Builder()
         .baseUrl("${ipAddress}${portNo}")
@@ -21,11 +21,14 @@ class RetrofitAPI: WebConfig() {
 
     private fun createOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
+
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
+
         builder.addInterceptor(interceptor)
         builder.connectTimeout(5, TimeUnit.SECONDS)
         builder.readTimeout(5, TimeUnit.SECONDS)
+
         return builder.build()
     }
 }

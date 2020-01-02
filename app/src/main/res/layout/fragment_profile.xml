@@ -130,9 +130,7 @@
                     android:text="Followings"
                     android:textSize="20dp"
                     />
-
             </LinearLayout>
-
 
         </LinearLayout>
 

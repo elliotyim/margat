@@ -11,10 +11,13 @@ class UriParser {
             var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
             var loader = CursorLoader(application, fileUri, proj, null, null, null)
             var cursor = loader.loadInBackground()
+
             var columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
             cursor?.moveToFirst()
+
             var result = cursor?.getString(columnIndex!!)
             cursor?.close()
+
             return result
         }
     }

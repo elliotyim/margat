@@ -1,4 +1,4 @@
-package com.example.margat.domain
+package com.example.margat.model
 
 data class Photo(
     var photoNo: Int = 0,

@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.example.margat.fragment.FeedFragment
-import com.example.margat.fragment.MessageFragment
+import com.example.margat.fragment.MessageViewPagerFragment
 import com.example.margat.fragment.PostingFragment
 import com.example.margat.fragment.ProfileFragment
 
@@ -19,15 +19,12 @@ class ContentsPagerAdapter: FragmentStatePagerAdapter {
         return when (position) {
             0 -> FeedFragment()
             1 -> PostingFragment()
-            2 -> MessageFragment()
+            2 -> MessageViewPagerFragment()
             3 -> ProfileFragment()
             else -> null as Fragment
         }
     }
 
-    override fun getCount(): Int {
-        return mPageCount
-    }
-
+    override fun getCount(): Int = mPageCount
 
 }

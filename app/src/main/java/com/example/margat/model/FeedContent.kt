@@ -1,4 +1,4 @@
-package com.example.margat.item
+package com.example.margat.model
 
 import java.util.ArrayList
 import java.util.HashMap

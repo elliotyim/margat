@@ -23,7 +23,7 @@ class PostingFragment : Fragment() {
     interface OnPostingFragmentInteractionListener
     private var mListener: OnPostingFragmentInteractionListener? = null
 
-    private lateinit var mContainer: ViewGroup
+
     private lateinit var mViewPager: ViewPager
     private lateinit var mImageAdapter: UploadImagePagerAdapter
     private lateinit var mPostController: PostController
@@ -48,7 +48,6 @@ class PostingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContainer = container!!
         return inflater.inflate(R.layout.fragment_posting, container, false)
     }
 

@@ -56,8 +56,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.2'
 
-    // Tap Layout
-    implementation 'com.google.android.material:material:1.0.0-alpha1'
+    // Android Material Design
+    implementation 'com.google.android.material:material:1.2.0-alpha03'
 
     // View Pager
     implementation 'androidx.viewpager:viewpager:1.0.0'

@@ -13,12 +13,6 @@
         android:src="@drawable/profile_default_circle"
         />
 
-<!--    <TextView-->
-<!--        android:id="@+id/item_number"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="@dimen/text_margin"-->
-<!--        android:textAppearance="?attr/textAppearanceListItem" />-->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -83,8 +77,6 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 />
-
-
         </LinearLayout>
     </LinearLayout>
 

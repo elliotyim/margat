@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class ContentViewPagerController {
 
-    var mActivity: MainActivity
+    private var mActivity: MainActivity
 
     constructor(mainActivity: MainActivity) {
         mActivity = mainActivity

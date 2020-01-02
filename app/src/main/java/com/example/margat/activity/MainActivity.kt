@@ -7,14 +7,18 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
+import com.example.margat.adapter.MyMessageRecyclerViewAdapter
 import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
-import com.example.margat.controller.*
+import com.example.margat.controller.ContentViewPagerController
+import com.example.margat.controller.PostController
+import com.example.margat.controller.TabController
 import com.example.margat.fragment.FeedFragment
-import com.example.margat.fragment.MessageFragment
+import com.example.margat.fragment.MessageViewPagerFragment
 import com.example.margat.fragment.PostingFragment
-import com.example.margat.item.FeedContent
-import com.example.margat.item.MessageItem
+import com.example.margat.model.FeedContent
 import com.example.margat.util.UriParser
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,9 +26,9 @@ import java.io.File
 
 
 class MainActivity : AppCompatActivity(),
-    MessageFragment.OnListFragmentInteractionListener,
     FeedFragment.OnListFragmentInteractionListener,
-    PostingFragment.OnPostingFragmentInteractionListener{
+    PostingFragment.OnPostingFragmentInteractionListener,
+    MessageViewPagerFragment.OnMyMessageFragmentInteractionListener {
 
     private var mPostController: PostController? = null
     private lateinit var mSocket: Socket
@@ -32,19 +36,24 @@ class MainActivity : AppCompatActivity(),
     override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {
         Toast.makeText(this, "클릭한 아이템의 내용은: ${item!!.content}", Toast.LENGTH_SHORT).show()
     }
-    override fun onListFragmentInteraction(item: MessageItem?) {}
+    override fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var socketController = SocketController(this)
-        socketController.connectToServerSocket()
-        mSocket = socketController.getSocket()
+//        var socketController = SocketController(this)
+//        socketController.connectToServerSocket()
+//        mSocket = socketController.getSocket()
 
         var tabController = TabController(this)
         var mTabLayout = tabController.createTabLayout()
         tabController.setEventListenersOnTabsWith(pager_content)
+
+
+//        val badge: BadgeDrawable = mTabLayout.getTabAt(2)!!.orCreateBadge
+//        badge.isVisible = true
+//        badge.number = 99
 
         var fragmentManager = supportFragmentManager
         var contentsViewPagerController = ContentViewPagerController(this)
@@ -80,12 +89,14 @@ class MainActivity : AppCompatActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-        mSocket.close()
+//        mSocket.close()
         mPostController!!.deleteAllFiles()
     }
 
     fun getPostController(): PostController {
         return mPostController!!
     }
+
+
 
 }

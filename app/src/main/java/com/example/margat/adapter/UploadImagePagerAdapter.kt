@@ -16,12 +16,11 @@ class UploadImagePagerAdapter: FragmentStatePagerAdapter {
         clearImages()
     }
 
-    override fun getCount(): Int {
-        return pageIndexes.size
-    }
+    override fun getCount(): Int = pageIndexes.size
+
     override fun getItem(position: Int): Fragment {
         var index = pageIndexes[position]
-        return UploadPhotoFragment.newInstance(index, imageUriList[position]) // 수정
+        return UploadPhotoFragment.newInstance(index, imageUriList[position])
     }
 
     fun deletePage(position: Int) {

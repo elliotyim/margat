@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.margat.R
 import com.example.margat.adapter.MyPhotoRecyclerAdapter.ViewHolder
 import com.example.margat.fragment.ProfileFragment
-import com.example.margat.item.MyPhotoItem
+import com.example.margat.model.MyPhotoItem
 
 class MyPhotoRecyclerAdapter: RecyclerView.Adapter<ViewHolder> {
 

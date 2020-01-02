@@ -1,6 +1,6 @@
 package com.example.margat.request
 
-import com.example.margat.domain.Post
+import com.example.margat.model.Post
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody

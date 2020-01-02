@@ -9,7 +9,7 @@ import com.example.margat.R
 
 
 import com.example.margat.fragment.FeedFragment.OnListFragmentInteractionListener
-import com.example.margat.item.FeedContent.FeedItem
+import com.example.margat.model.FeedContent.FeedItem
 
 import kotlinx.android.synthetic.main.fragment_feed.view.*
 
