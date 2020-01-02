@@ -10,6 +10,7 @@ import com.example.margat.R
 import com.example.margat.adapter.MyMessageRecyclerViewAdapter
 import com.example.margat.const.Photo.Companion.PICK_FROM_GALLERY
 import com.example.margat.controller.ContentViewPagerController
+import com.example.margat.controller.MessageController
 import com.example.margat.controller.PostController
 import com.example.margat.controller.TabController
 import com.example.margat.fragment.FeedFragment
@@ -17,12 +18,18 @@ import com.example.margat.fragment.MessageListFragment
 import com.example.margat.fragment.MessageViewPagerFragment
 import com.example.margat.fragment.PostingFragment
 import com.example.margat.model.FeedContent
+import com.example.margat.model.MessageItem
+import com.example.margat.request.MessageRequest
+import com.example.margat.util.MyCallback
+import com.example.margat.util.RetrofitAPI
 import com.example.margat.util.UriParser
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Response
 import java.io.File
 
 
@@ -32,14 +39,24 @@ class MainActivity : AppCompatActivity(),
     MessageViewPagerFragment.OnMyMessageFragmentInteractionListener,
     MessageListFragment.OnMessageListFragmentInteractionListener {
 
-    private var mPostController: PostController? = null
+    private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
+    private lateinit var mMessageController: MessageController
+    private lateinit var mPostController: PostController
+    private lateinit var mTabLayout: TabLayout
+
     private lateinit var mSocket: Socket
 
+    override fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter) {}
     override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {
         Toast.makeText(this, "클릭한 아이템의 내용은: ${item!!.content}", Toast.LENGTH_SHORT).show()
     }
-    override fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter) {}
-    override fun onMyMessageFragmentInteraction(item: Any?) {}
+    override fun getMessageRecyclerViewAdapter(adapter: MyMessageRecyclerViewAdapter) {
+        mMessageListRecyclerViewAdapter = adapter
+    }
+
+    override fun getMessageController(controller: MessageController) {
+        mMessageController = controller
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +67,10 @@ class MainActivity : AppCompatActivity(),
 //        mSocket = socketController.getSocket()
 
         var tabController = TabController(this)
-        var mTabLayout = tabController.createTabLayout()
+        mTabLayout = tabController.createTabLayout()
         tabController.setEventListenersOnTabsWith(pager_content)
 
-
-//        val badge: BadgeDrawable = mTabLayout.getTabAt(2)!!.orCreateBadge
-//        badge.isVisible = true
-//        badge.number = 99
+        setUnreadMessageCountOnCreateActivity()
 
         var fragmentManager = supportFragmentManager
         var contentsViewPagerController = ContentViewPagerController(this)
@@ -100,6 +114,30 @@ class MainActivity : AppCompatActivity(),
         return mPostController!!
     }
 
+    fun setUnreadMessageCountOnCreateActivity() {
+        val badge: BadgeDrawable = mTabLayout.getTabAt(2)!!.orCreateBadge
+        badge.isVisible = true
+
+        var info = this.getSharedPreferences("loginUser", 0)
+
+        var messageRequest = RetrofitAPI().creater.create(MessageRequest::class.java)
+        messageRequest.findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<Array<MessageItem>>() {
+            override fun onResponse(
+                call: Call<Array<MessageItem>>,
+                response: Response<Array<MessageItem>>
+            ) {
+                if (response.code() == 200) {
+                    var resultArr: Array<MessageItem> = response.body()!!
+                    var sumOfUnreadCount = 0
+                    for (e in resultArr) {
+                        sumOfUnreadCount += e.unreadMsgCount
+                    }
+                    badge.number = sumOfUnreadCount
+                }
+            }
+
+        })
+    }
 
 
 

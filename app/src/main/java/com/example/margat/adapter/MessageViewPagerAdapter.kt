@@ -25,9 +25,8 @@ class MessageViewPagerAdapter: FragmentStatePagerAdapter {
     override fun getCount(): Int = pageIndexes.size
 
     override fun getItem(position: Int): Fragment {
-        var index = pageIndexes[position]
         return when (position) {
-            0 -> MessageListFragment(index)
+            0 -> MessageListFragment()
             1 -> Fragment()
             else -> Fragment()
         }

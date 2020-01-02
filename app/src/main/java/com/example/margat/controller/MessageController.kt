@@ -9,18 +9,21 @@ import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Response
-import java.text.SimpleDateFormat
 
 class MessageController {
 
-    var mActivity: MainActivity
-    var mList: ArrayList<MessageItem>
-    var mAdapter: MyMessageRecyclerViewAdapter
+    private var mActivity: MainActivity
+    private var mAdapter: MyMessageRecyclerViewAdapter
+    private var mList = ArrayList<MessageItem>()
+    private var sumOfUnreadCount = 0
+
 
     constructor(context: Context, mList: ArrayList<MessageItem>, mAdapter: MyMessageRecyclerViewAdapter) {
         this.mActivity = context as MainActivity
         this.mList = mList
         this.mAdapter = mAdapter
+
+        loadMessageList()
     }
 
     fun loadMessageList() {
@@ -34,10 +37,12 @@ class MessageController {
             ) {
                 if (response.code() == 200) {
                     var resultArr: Array<MessageItem> = response.body()!!
+                    sumOfUnreadCount = 0
                     for (e in resultArr) {
+                        sumOfUnreadCount += e.unreadMsgCount
                         addItem(e)
                     }
-                    mAdapter.notifyDataSetChanged()
+                    mAdapter!!.notifyDataSetChanged()
                 }
             }
 
@@ -47,5 +52,7 @@ class MessageController {
     private fun addItem(item: MessageItem) {
         mList.add(item)
     }
+
+    fun getSumOfUnreadCount() = sumOfUnreadCount
 
 }
