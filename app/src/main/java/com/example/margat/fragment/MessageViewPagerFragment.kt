@@ -20,13 +20,9 @@ class MessageViewPagerFragment: Fragment() {
     private var mListener: OnMyMessageFragmentInteractionListener? = null
 
     private var mNum: Int = 0
-    private var mList = ArrayList<MessageItem>()
 
     private lateinit var mMessageViewPager: NonSwipeViewPager
     private lateinit var mMessageViewPagerAdapter: MessageViewPagerAdapter
-
-    private lateinit var mMessageListRecyclerView: RecyclerView
-    private lateinit var mMessageListAdapter: MyMessageRecyclerViewAdapter
 
     interface OnMyMessageFragmentInteractionListener {
         fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter)
@@ -49,13 +45,6 @@ class MessageViewPagerFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mNum = if (arguments != null) arguments!!.getInt("num") else 1
-
-//        mMessageListAdapter = MyMessageRecyclerViewAdapter(mList, mContext)
-
-//        var messageController = MessageController(mListener as MainActivity, mList, mMessageListAdapter)
-//        messageController.loadMessageList()
-
-//        mListener!!.onMyMessageFragmentInteraction(mMessageListAdapter)
     }
 
     override fun onCreateView(
@@ -66,16 +55,12 @@ class MessageViewPagerFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_message_viewpager, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
-        initialiseMessageListViewPager()
-    }
-
-    private fun initialiseMessageListViewPager() {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         mMessageViewPager = messageViewPager
-        mMessageViewPagerAdapter = MessageViewPagerAdapter(fragmentManager!!, mList, mListener as MainActivity)
+        mMessageViewPagerAdapter = MessageViewPagerAdapter(childFragmentManager, mListener as MainActivity)
         mMessageViewPager.adapter = mMessageViewPagerAdapter
-    }
 
+    }
 
 }

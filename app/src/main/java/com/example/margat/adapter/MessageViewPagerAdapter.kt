@@ -15,12 +15,9 @@ class MessageViewPagerAdapter: FragmentStatePagerAdapter {
     private var mActivity: MainActivity
 
     private var pageIndexes: ArrayList<Int> = ArrayList()
-    private var mList: ArrayList<MessageItem>
 
-    constructor(fm: FragmentManager, mList: ArrayList<MessageItem>, mActivity: MainActivity): super(fm) {
-        this.mList = mList
+    constructor(fm: FragmentManager, mActivity: MainActivity): super(fm) {
         this.mActivity = mActivity
-
         for (i in 0..1)
             pageIndexes.add(i)
     }
@@ -29,15 +26,15 @@ class MessageViewPagerAdapter: FragmentStatePagerAdapter {
 
     override fun getItem(position: Int): Fragment {
         var index = pageIndexes[position]
-        println("인덱스는? $index")
         return when (position) {
-            0 -> MessageListFragment(index, mList, mActivity)
-            1 -> ProfileFragment()
-            else -> ProfileFragment()
+            0 -> MessageListFragment(index)
+            1 -> Fragment()
+            else -> Fragment()
         }
     }
 
-//    override fun getItemPosition(`object`: Any): Int {
-//        return PagerAdapter.POSITION_NONE
-//    }
+    override fun getItemPosition(`object`: Any): Int {
+        return PagerAdapter.POSITION_NONE
+    }
+
 }

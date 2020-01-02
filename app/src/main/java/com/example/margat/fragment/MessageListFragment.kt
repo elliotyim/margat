@@ -1,5 +1,6 @@
 package com.example.margat.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,34 +16,46 @@ import com.example.margat.model.MessageItem
 import kotlinx.android.synthetic.main.fragment_message_list.*
 
 class MessageListFragment: Fragment {
-
-    private var mActivity: MainActivity
-
+    private var mListener: MainActivity? = null
     private var mNum: Int = 0
-    private var mList: ArrayList<MessageItem>
+    private var mList = ArrayList<MessageItem>()
 
     private lateinit var mMessageListRecycler: RecyclerView
     private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
 
     private lateinit var mMessageController: MessageController
 
+    constructor(): super()
 
-    constructor(num: Int, mList: ArrayList<MessageItem>, mActivity: MainActivity) {
-        this.mList = mList
-        this.mActivity = mActivity
-
+    constructor(num: Int) {
         var args = Bundle()
         args.putInt("num", num)
         arguments = args
 
     }
 
+    interface OnMessageListFragmentInteractionListener {
+        fun onMyMessageFragmentInteraction(item: Any?)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnMessageListFragmentInteractionListener) {
+            mListener = context as MainActivity?
+        } else {
+            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mNum = if (arguments != null) arguments!!.getInt("num") else 1
 
-        mMessageListRecyclerViewAdapter = MyMessageRecyclerViewAdapter(mList, mActivity)
-        mMessageController = MessageController(mActivity, mList, mMessageListRecyclerViewAdapter)
 
     }
 
@@ -57,11 +70,14 @@ class MessageListFragment: Fragment {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        mMessageListRecyclerViewAdapter = MyMessageRecyclerViewAdapter(mList, mListener!!)
+        mMessageController = MessageController(mListener!!, mList, mMessageListRecyclerViewAdapter)
         mMessageController.loadMessageList()
 
         mMessageListRecycler = messageListRecycler
         mMessageListRecycler.adapter = mMessageListRecyclerViewAdapter
-        mMessageListRecycler.layoutManager = LinearLayoutManager(mActivity)
+        mMessageListRecycler.layoutManager = LinearLayoutManager(mListener!!)
     }
+
 
 }

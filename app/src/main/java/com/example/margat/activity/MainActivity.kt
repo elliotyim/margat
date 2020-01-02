@@ -13,6 +13,7 @@ import com.example.margat.controller.ContentViewPagerController
 import com.example.margat.controller.PostController
 import com.example.margat.controller.TabController
 import com.example.margat.fragment.FeedFragment
+import com.example.margat.fragment.MessageListFragment
 import com.example.margat.fragment.MessageViewPagerFragment
 import com.example.margat.fragment.PostingFragment
 import com.example.margat.model.FeedContent
@@ -28,7 +29,8 @@ import java.io.File
 class MainActivity : AppCompatActivity(),
     FeedFragment.OnListFragmentInteractionListener,
     PostingFragment.OnPostingFragmentInteractionListener,
-    MessageViewPagerFragment.OnMyMessageFragmentInteractionListener {
+    MessageViewPagerFragment.OnMyMessageFragmentInteractionListener,
+    MessageListFragment.OnMessageListFragmentInteractionListener {
 
     private var mPostController: PostController? = null
     private lateinit var mSocket: Socket
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this, "클릭한 아이템의 내용은: ${item!!.content}", Toast.LENGTH_SHORT).show()
     }
     override fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter) {}
+    override fun onMyMessageFragmentInteraction(item: Any?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +99,7 @@ class MainActivity : AppCompatActivity(),
     fun getPostController(): PostController {
         return mPostController!!
     }
+
 
 
 

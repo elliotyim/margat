@@ -25,7 +25,6 @@ class MessageController {
 
     fun loadMessageList() {
         var info = mActivity.getSharedPreferences("loginUser", 0)
-        println("통신 오류 일수도 있지?")
 
         var messageRequest = RetrofitAPI().creater.create(MessageRequest::class.java)
         messageRequest.findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<Array<MessageItem>>() {
@@ -34,15 +33,9 @@ class MessageController {
                 response: Response<Array<MessageItem>>
             ) {
                 if (response.code() == 200) {
-                    println("값을 잘 받아왔나 테스트!!")
                     var resultArr: Array<MessageItem> = response.body()!!
                     for (e in resultArr) {
-                        var format = SimpleDateFormat("HH-mm:ss")
-                        println(e)
-                        println(format.format(e.receivedDate))
-
                         addItem(e)
-
                     }
                     mAdapter.notifyDataSetChanged()
                 }
