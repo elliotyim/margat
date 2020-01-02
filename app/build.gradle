@@ -73,4 +73,7 @@ dependencies {
     implementation ('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
+
+    // Chat Kit
+    implementation 'com.github.stfalcon:chatkit:0.3.3'
 }

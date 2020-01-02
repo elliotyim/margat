@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.margat.R
@@ -21,6 +23,7 @@ import com.example.margat.model.FeedContent
 import com.example.margat.model.MessageItem
 import com.example.margat.request.MessageRequest
 import com.example.margat.util.MyCallback
+import com.example.margat.util.NonSwipeViewPager
 import com.example.margat.util.RetrofitAPI
 import com.example.margat.util.UriParser
 import com.google.android.material.badge.BadgeDrawable
@@ -36,7 +39,7 @@ import java.io.File
 class MainActivity : AppCompatActivity(),
     FeedFragment.OnListFragmentInteractionListener,
     PostingFragment.OnPostingFragmentInteractionListener,
-    MessageViewPagerFragment.OnMyMessageFragmentInteractionListener,
+    MessageViewPagerFragment.OnMessageViewPagerFragmentInteractionListener,
     MessageListFragment.OnMessageListFragmentInteractionListener {
 
     private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
@@ -44,9 +47,11 @@ class MainActivity : AppCompatActivity(),
     private lateinit var mPostController: PostController
     private lateinit var mTabLayout: TabLayout
 
+    private lateinit var mMessageViewPager: NonSwipeViewPager
+    private lateinit var mButton: Button
+
     private lateinit var mSocket: Socket
 
-    override fun onMyMessageFragmentInteraction(item: MyMessageRecyclerViewAdapter) {}
     override fun onListFragmentInteraction(item: FeedContent.FeedItem?) {
         Toast.makeText(this, "클릭한 아이템의 내용은: ${item!!.content}", Toast.LENGTH_SHORT).show()
     }
@@ -56,6 +61,18 @@ class MainActivity : AppCompatActivity(),
 
     override fun getMessageController(controller: MessageController) {
         mMessageController = controller
+    }
+
+    override fun onAnotherInteraction(button: Button) {
+        Log.w("asdf","온메시지 인터액션")
+        mButton = button
+        mButton.setOnClickListener {
+            mMessageViewPager.currentItem++
+        }
+    }
+
+    override fun onMessageListFragmentInteraction(item: MessageItem) {
+        Toast.makeText(this, "클릭한 채팅방 번호: ${item.chatNo}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,10 +110,10 @@ class MainActivity : AppCompatActivity(),
             while (destinationFile.exists())
                 destinationFile = File("$destinationPath.tmp")
 
-            mPostController!!.cropImage(Uri.fromFile(File(filePath)), Uri.fromFile(destinationFile))
+            mPostController.cropImage(Uri.fromFile(File(filePath)), Uri.fromFile(destinationFile))
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            mPostController!!.setImage(UCrop.getOutput(data!!)!!)
+            mPostController.setImage(UCrop.getOutput(data!!)!!)
         }
 
         if (resultCode == UCrop.RESULT_ERROR && requestCode == UCrop.REQUEST_CROP)
@@ -107,11 +124,11 @@ class MainActivity : AppCompatActivity(),
     override fun onDestroy() {
         super.onDestroy()
 //        mSocket.close()
-        mPostController!!.deleteAllFiles()
+        mPostController.deleteAllFiles()
     }
 
     fun getPostController(): PostController {
-        return mPostController!!
+        return mPostController
     }
 
     fun setUnreadMessageCountOnCreateActivity() {
@@ -139,6 +156,10 @@ class MainActivity : AppCompatActivity(),
         })
     }
 
+    override fun onMyMessageFragmentInteraction(item: NonSwipeViewPager) {
+        Log.w("asdf", "프래그먼트 인터액션")
+        mMessageViewPager = item
+    }
 
 
 }

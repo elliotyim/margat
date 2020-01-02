@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
 import com.example.margat.activity.MainActivity
 import com.example.margat.fragment.FeedFragment
+import com.example.margat.fragment.MessageDetailFragment
 import com.example.margat.fragment.MessageListFragment
 import com.example.margat.fragment.ProfileFragment
 import com.example.margat.model.MessageItem
@@ -27,7 +28,7 @@ class MessageViewPagerAdapter: FragmentStatePagerAdapter {
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> MessageListFragment()
-            1 -> Fragment()
+            1 -> MessageDetailFragment()
             else -> Fragment()
         }
     }

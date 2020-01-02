@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.margat.R
 import com.example.margat.config.WebConfig
+import com.example.margat.fragment.MessageListFragment
 import com.example.margat.model.MessageItem
 
 class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
@@ -20,9 +21,17 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
     private var mData: List<MessageItem>
     private var mContext: Context
 
-    constructor(list: List<MessageItem>, mContext: Context) {
+    private val mOnClickListener: View.OnClickListener
+
+    constructor(list: List<MessageItem>, mListener: MessageListFragment.OnMessageListFragmentInteractionListener?) {
         this.mData = list
-        this.mContext = mContext
+        this.mContext = mListener as Context
+
+        mOnClickListener = View.OnClickListener { v ->
+            val item = v.tag as MessageItem
+            mListener?.onMessageListFragmentInteraction(item)
+        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,6 +58,11 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
             holder.unreadMsgCount.text = item.unreadMsgCount.toString()
         holder.receivedDate.text = item.receivedDate.toString()
         holder.messageContent.text = item.messageContent
+
+        with(holder.itemView) {
+            tag = item
+            setOnClickListener(mOnClickListener)
+        }
 
     }
 

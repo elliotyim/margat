@@ -19,6 +19,14 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_weight="1"
+        />
+    <Button
+        android:id="@+id/temp_button_to_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TempButton!"
+        android:textSize="24dp"
         />
 
 </LinearLayout>
