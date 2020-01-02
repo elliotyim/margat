@@ -49,16 +49,18 @@ class MessageFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_message_list, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mAdapter = MyMessageRecyclerViewAdapter(mList, activity!!.applicationContext)
+        var messageController = MessageController(listener as MainActivity, mList, mAdapter)
+        messageController.loadMessageList()
+    }
+
     override fun onStart() {
         super.onStart()
 
-
         mRecyclerView = messageListRecycler
-        mAdapter = MyMessageRecyclerViewAdapter(mList, activity!!.applicationContext)
         mRecyclerView.adapter = mAdapter
-
-        var messageController = MessageController(listener as MainActivity, mList, mAdapter)
-        messageController.loadMessageList()
 
         mRecyclerView.layoutManager = LinearLayoutManager(this.context)
     }
