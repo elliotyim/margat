@@ -36,8 +36,8 @@ class RegistrationActivity : AppCompatActivity() {
     }
 
     private fun requestUserRegistrationOf(member: Member) {
-        var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
-        memberRequest.insert(member).enqueue(object: MyCallback<ResponseBody>() {
+        RetrofitAPI.newInstance().getRetrofit().create(MemberRequest::class.java)
+            .insert(member).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.code() == 200) {
                     Toast.makeText(applicationContext,

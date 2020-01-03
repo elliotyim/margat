@@ -29,20 +29,21 @@ class MessageController {
     fun loadMessageList() {
         var info = mActivity.getSharedPreferences("loginUser", 0)
 
-        var messageRequest = RetrofitAPI().creater.create(MessageRequest::class.java)
-        messageRequest.findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<Array<MessageItem>>() {
+        RetrofitAPI.newInstance().getRetrofit().create(MessageRequest::class.java)
+            .findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<ArrayList<MessageItem>>() {
             override fun onResponse(
-                call: Call<Array<MessageItem>>,
-                response: Response<Array<MessageItem>>
+                call: Call<ArrayList<MessageItem>>,
+                response: Response<ArrayList<MessageItem>>
             ) {
                 if (response.code() == 200) {
-                    var resultArr: Array<MessageItem> = response.body()!!
+                    var resultArr: ArrayList<MessageItem> = response.body()!!
                     sumOfUnreadCount = 0
                     for (e in resultArr) {
                         sumOfUnreadCount += e.unreadMsgCount
                         addItem(e)
                     }
                     mAdapter!!.notifyDataSetChanged()
+                    resultArr.clear()
                 }
             }
 

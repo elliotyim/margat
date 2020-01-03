@@ -23,7 +23,6 @@ class PostingFragment : Fragment() {
     interface OnPostingFragmentInteractionListener
     private var mListener: OnPostingFragmentInteractionListener? = null
 
-
     private lateinit var mViewPager: ViewPager
     private lateinit var mImageAdapter: UploadImagePagerAdapter
     private lateinit var mPostController: PostController

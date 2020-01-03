@@ -22,14 +22,8 @@ class MessageListFragment: Fragment() {
     private var mListener: OnMessageListFragmentInteractionListener? = null
     private var mList = ArrayList<MessageItem>()
 
-    private lateinit var mMessageListRecycler: RecyclerView
     private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
-
     private lateinit var mMessageController: MessageController
-
-    private lateinit var mMessageViewpager: NonSwipeViewPager
-
-    private lateinit var mButton: Button
 
     interface OnMessageListFragmentInteractionListener {
         fun getMessageRecyclerViewAdapter(adapter: MyMessageRecyclerViewAdapter)
@@ -65,7 +59,7 @@ class MessageListFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.w("asdf", "여기가 먼저 실행될까?")
+
         var view = inflater.inflate(R.layout.fragment_message_list, container, false)
         var button = view.findViewById(R.id.temp_button_to_detail) as Button
         mListener!!.onAnotherInteraction(button)
@@ -75,9 +69,8 @@ class MessageListFragment: Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mMessageListRecycler = messageListRecycler
-        mMessageListRecycler.adapter = mMessageListRecyclerViewAdapter
-        mMessageListRecycler.layoutManager = LinearLayoutManager(mListener!! as MainActivity)
+        messageListRecycler.adapter = mMessageListRecyclerViewAdapter
+        messageListRecycler.layoutManager = LinearLayoutManager(activity)
 
 
 

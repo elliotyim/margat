@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 interface PostingRequest {
     @GET("/posts/member/{no}")
-    fun findAllPostsOf(@Path("no") memberNo:Int): Call<Array<Post>>
+    fun findAllPostsOf(@Path("no") memberNo:Int): Call<ArrayList<Post>>
 
     @Multipart
     @POST("/post/photos")

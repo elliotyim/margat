@@ -17,8 +17,7 @@
         android:theme="@style/Theme.MyApp">
         <activity android:name=".activity.FindPasswordActivity" />
         <activity android:name=".activity.RegistrationActivity" />
-        <activity android:name=".activity.MainActivity"
-            android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name=".activity.MainActivity"/>
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,6 +1,5 @@
-package com.example.margat.fragment
+package com.example.margat.model
 
-import com.example.margat.model.Author
 import com.stfalcon.chatkit.commons.models.IMessage
 import java.sql.Date
 

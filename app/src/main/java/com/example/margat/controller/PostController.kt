@@ -54,8 +54,8 @@ class PostController {
         map["memberNo"] = RequestBody.create(MediaType.parse("text/plain"), memberNo.toString())
         map["postContent"] = postContentBody
 
-        var request = RetrofitAPI().creater.create(PostingRequest::class.java)
-        request.writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
+        RetrofitAPI.newInstance().getRetrofit().create(PostingRequest::class.java)
+            .writePostWithPhotos(map, imageList).enqueue(object: MyCallback<ResponseBody>() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.code() == 200) {
                     deleteAllFiles()

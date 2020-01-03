@@ -1,5 +1,5 @@
 package com.example.margat.model
 
-class MyPhotoItem {
+data class MyPhotoItem(
     var photoUri: String? = null
-}
+)

@@ -37,8 +37,7 @@ class LoginActivity : AppCompatActivity() {
                 password = info.getString("password", "").toString()
             }
 
-            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkEmailAndPasswordOf(member, memberRequest)
+            checkEmailAndPasswordOf(member, RetrofitAPI.newInstance().getRetrofit().create(MemberRequest::class.java))
         }
     }
 
@@ -61,15 +60,14 @@ class LoginActivity : AppCompatActivity() {
                 password = password_input.text.toString()
             }
 
-            var memberRequest = RetrofitAPI().creater.create(MemberRequest::class.java)
-            checkEmailOf(member, memberRequest)
+            checkEmailOf(member, RetrofitAPI.newInstance().getRetrofit().create(MemberRequest::class.java))
         }
 
     }
 
     private fun checkEmailOf(member: Member, memberRequest: MemberRequest) {
-        memberRequest.findMemberByEmail(member).enqueue(object: MyCallback<Array<Member>>() {
-            override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+        memberRequest.findMemberByEmail(member).enqueue(object: MyCallback<ArrayList<Member>>() {
+            override fun onResponse(call: Call<ArrayList<Member>>, response: Response<ArrayList<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
                         Toast.makeText(applicationContext,
@@ -83,8 +81,8 @@ class LoginActivity : AppCompatActivity() {
         })
     }
     private fun checkEmailAndPasswordOf(member: Member, memberRequest: MemberRequest) {
-        memberRequest.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<Array<Member>>() {
-            override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+        memberRequest.findMemberByEmailAndPassword(member).enqueue(object: MyCallback<ArrayList<Member>>() {
+            override fun onResponse(call: Call<ArrayList<Member>>, response: Response<ArrayList<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
                         Toast.makeText(applicationContext,
@@ -94,23 +92,24 @@ class LoginActivity : AppCompatActivity() {
 
                     if (rememberMe.isChecked) setAutoLogin(member)
 
-                    var name: String? = response.body()!![0].name
+                    var member: Member? = response.body()!![0]
                     Toast.makeText(applicationContext,
-                        "${name}님 환영합니다!", Toast.LENGTH_SHORT).show()
+                        "${member!!.name}님 환영합니다!", Toast.LENGTH_SHORT).show()
 
                     var info = getSharedPreferences("loginUser", 0)
                     var editor = info.edit().apply {
-                        putInt("no", response.body()!![0].no)
-                        putString("name", name)
-                        putString("email", response.body()!![0].email)
-                        putString("tel", response.body()!![0].tel)
-                        putString("registeredDate", response.body()!![0].registeredDate)
-                        putString("profilePhoto", response.body()!![0].profilePhoto)
-                        putString("emailKey", response.body()!![0].emailKey)
-                        putInt("memberState", response.body()!![0].memberState)
+                        putInt("no", member!!.no)
+                        putString("name", member!!.name)
+                        putString("email", member!!.email)
+                        putString("tel", member!!.tel)
+                        putString("registeredDate", member!!.registeredDate)
+                        putString("profilePhoto", member!!.profilePhoto)
+                        putString("emailKey", member!!.emailKey)
+                        putInt("memberState", member!!.memberState)
                     }
                     editor.commit()
 
+                    member = null
                     goToMainActivity()
                 }
             }

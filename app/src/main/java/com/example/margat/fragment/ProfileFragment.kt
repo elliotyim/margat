@@ -1,6 +1,5 @@
 package com.example.margat.fragment
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.ShapeDrawable
@@ -18,11 +17,11 @@ import com.example.margat.activity.LoginActivity
 import com.example.margat.adapter.MyPhotoRecyclerAdapter
 import com.example.margat.config.WebConfig.Companion.ipAddress
 import com.example.margat.config.WebConfig.Companion.portNo
+import com.example.margat.model.Following
+import com.example.margat.model.MyPhotoItem
+import com.example.margat.model.Post
 import com.example.margat.request.FollowingRequest
 import com.example.margat.request.PostingRequest
-import com.example.margat.model.Following
-import com.example.margat.model.Post
-import com.example.margat.model.MyPhotoItem
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -35,9 +34,6 @@ class ProfileFragment : Fragment() {
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
     private var mList = ArrayList<MyPhotoItem>()
 
-    companion object {
-        lateinit var mContext: Context
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +44,6 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        mContext = activity!!.applicationContext
 
         loadUserInfo()
         initialiseMyPhotoList()
@@ -57,7 +52,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserInfo() {
-        var info = mContext.getSharedPreferences("loginUser", 0)
+        var info = activity!!.getSharedPreferences("loginUser", 0)
 
         profileName.text = info.getString("name", "").toString()
         setProfilePhotoBy(info)
@@ -65,24 +60,21 @@ class ProfileFragment : Fragment() {
         setPostPhotosBy(info)
     }
 
-    fun initialiseMyPhotoList() {
+    private fun initialiseMyPhotoList() {
         mRecyclerView = myPhotosRecycler
         mAdapter = MyPhotoRecyclerAdapter(mList)
         mRecyclerView.adapter = mAdapter
 
-        mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)!!
+        mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)
     }
 
     private fun addItem(photoUri: String) {
-        var item = MyPhotoItem()
-        item.photoUri = photoUri
-        mList.add(item)
+        mList.add(MyPhotoItem(photoUri))
     }
 
     private fun setProfilePhotoBy(info: SharedPreferences) {
-        var profilePhotoFileName = info.getString("profilePhoto", "").toString()
-        Glide.with(mContext)
-            .load("${ipAddress}${portNo}/upload/profile_photos/${profilePhotoFileName}")
+        Glide.with(activity!!)
+            .load("${ipAddress}${portNo}/upload/profile_photos/${info.getString("profilePhoto", "").toString()}")
             .placeholder(R.drawable.profile_default_circle)
             .into(profilePhoto)
         profilePhoto?.background = ShapeDrawable(OvalShape())
@@ -90,20 +82,20 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setFollowingsAndFollowers(info: SharedPreferences) {
-        var followingRequest = RetrofitAPI().creater.create(FollowingRequest::class.java)
 
         var memberNo = info.getInt("no", 0)
-        followingRequest.findAllFollowingsOf(memberNo).enqueue(object: MyCallback<Array<Following>>() {
+        RetrofitAPI.newInstance().getRetrofit().create(FollowingRequest::class.java)
+            .findAllFollowingsOf(memberNo).enqueue(object: MyCallback<ArrayList<Following>>() {
             override fun onResponse(
-                call: Call<Array<Following>>,
-                response: Response<Array<Following>>
+                call: Call<ArrayList<Following>>,
+                response: Response<ArrayList<Following>>
             ) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {return}
 
                     var followings = 0
                     var followers = 0
-                    var result: Array<Following> = response.body()!!
+                    var result: ArrayList<Following> = response.body()!!
 
                     for (i in result.indices) {
                         if (result[i].followerMemberNo == memberNo)
@@ -115,6 +107,7 @@ class ProfileFragment : Fragment() {
                     if (numberOfFollowings != null) numberOfFollowings.text = followings.toString()
                     if (numberOfFollowers != null) numberOfFollowers.text = followers.toString()
 
+                    result.clear()
                 }
             }
 
@@ -122,10 +115,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setPostPhotosBy(info: SharedPreferences) {
-        var postingRequest = RetrofitAPI().creater.create(PostingRequest::class.java)
-
-        postingRequest.findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<Array<Post>>() {
-            override fun onResponse(call: Call<Array<Post>>, response: Response<Array<Post>>) {
+        RetrofitAPI.newInstance().getRetrofit().create(PostingRequest::class.java)
+            .findAllPostsOf(info.getInt("no", 0)).enqueue(object: MyCallback<ArrayList<Post>>() {
+            override fun onResponse(call: Call<ArrayList<Post>>, response: Response<ArrayList<Post>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {return}
 
@@ -133,12 +125,12 @@ class ProfileFragment : Fragment() {
                     var numberOfPost = result!!.size
                     setNumberOfPosts(numberOfPost)
 
-                    for (i in 1..numberOfPost!!) {
-                        var photoName = result!![i-1].photos[0].photoName
-                        addItem("${ipAddress}${portNo}/upload/photos/${photoName}")
+                    for (i in 1..numberOfPost) {
+                        addItem("${ipAddress}${portNo}/upload/photos/${result[i-1].photos[0].photoName}")
                     }
 
                     mAdapter.notifyDataSetChanged()
+                    result.clear()
                 }
             }
 
@@ -151,10 +143,8 @@ class ProfileFragment : Fragment() {
 
     private fun setOnClickListenerToLogoutButton() {
         logoutButton.setOnClickListener {
-            var info: SharedPreferences = this.activity!!.getSharedPreferences("setting", 0)
-            var editor: SharedPreferences.Editor = info.edit()
-            editor.clear()
-            editor.apply()
+            var info: SharedPreferences = this.activity!!.getSharedPreferences("autoLoginUser", 0)
+            info.edit().clear().apply()
 
             val intent = Intent(this.activity, LoginActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

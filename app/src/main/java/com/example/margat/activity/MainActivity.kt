@@ -31,6 +31,8 @@ import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import retrofit2.Call
 import retrofit2.Response
 import java.io.File
@@ -137,19 +139,20 @@ class MainActivity : AppCompatActivity(),
 
         var info = this.getSharedPreferences("loginUser", 0)
 
-        var messageRequest = RetrofitAPI().creater.create(MessageRequest::class.java)
-        messageRequest.findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<Array<MessageItem>>() {
+        RetrofitAPI.newInstance().getRetrofit().create(MessageRequest::class.java)
+            .findMessageList(info.getInt("no", 0)).enqueue(object: MyCallback<ArrayList<MessageItem>>() {
             override fun onResponse(
-                call: Call<Array<MessageItem>>,
-                response: Response<Array<MessageItem>>
+                call: Call<ArrayList<MessageItem>>,
+                response: Response<ArrayList<MessageItem>>
             ) {
                 if (response.code() == 200) {
-                    var resultArr: Array<MessageItem> = response.body()!!
+                    var resultArr: ArrayList<MessageItem> = response.body()!!
                     var sumOfUnreadCount = 0
                     for (e in resultArr) {
                         sumOfUnreadCount += e.unreadMsgCount
                     }
                     badge.number = sumOfUnreadCount
+                    resultArr.clear()
                 }
             }
 

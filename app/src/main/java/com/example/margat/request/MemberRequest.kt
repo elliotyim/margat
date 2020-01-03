@@ -9,13 +9,13 @@ import retrofit2.http.POST
 
 interface MemberRequest {
     @POST("/member/email")
-    fun findMemberByEmail(@Body member: Member): Call<Array<Member>>
+    fun findMemberByEmail(@Body member: Member): Call<ArrayList<Member>>
 
     @POST("/member/email/password")
-    fun findMemberByEmailAndPassword(@Body member: Member): Call<Array<Member>>
+    fun findMemberByEmailAndPassword(@Body member: Member): Call<ArrayList<Member>>
 
     @POST("/member/name/email")
-    fun findMemberByNameAndEmail(@Body member: Member): Call<Array<Member>>
+    fun findMemberByNameAndEmail(@Body member: Member): Call<ArrayList<Member>>
 
     @PATCH("/member/password")
     fun sendRandomPasswordAt(@Body member: Member): Call<ResponseBody>

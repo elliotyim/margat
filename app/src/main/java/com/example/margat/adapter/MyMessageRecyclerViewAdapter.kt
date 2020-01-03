@@ -18,18 +18,18 @@ import com.example.margat.model.MessageItem
 
 class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
 
-    private var mData: List<MessageItem>
+    private var messageItemList: List<MessageItem>
     private var mContext: Context
 
     private val mOnClickListener: View.OnClickListener
 
     constructor(list: List<MessageItem>, mListener: MessageListFragment.OnMessageListFragmentInteractionListener?) {
-        this.mData = list
+        this.messageItemList = list
         this.mContext = mListener as Context
 
         mOnClickListener = View.OnClickListener { v ->
             val item = v.tag as MessageItem
-            mListener?.onMessageListFragmentInteraction(item)
+            mListener.onMessageListFragmentInteraction(item)
         }
 
     }
@@ -43,7 +43,7 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var item = mData[position]
+        var item = messageItemList[position]
 
         Glide.with(mContext)
             .load("${WebConfig.ipAddress}${WebConfig.portNo}/upload/profile_photos/${item.messageUserPhotoItem}")
@@ -66,7 +66,7 @@ class MyMessageRecyclerViewAdapter : RecyclerView.Adapter<MyMessageRecyclerViewA
 
     }
 
-    override fun getItemCount(): Int = mData.size
+    override fun getItemCount(): Int = messageItemList.size
 
     inner class ViewHolder: RecyclerView.ViewHolder {
         var messageUserPhotoItem: ImageView

@@ -7,5 +7,5 @@ import retrofit2.http.Path
 
 interface MessageRequest {
     @GET("/messages/list/{memNo}")
-    fun findMessageList(@Path("memNo") memberNo:Int): Call<Array<MessageItem>>
+    fun findMessageList(@Path("memNo") memberNo:Int): Call<ArrayList<MessageItem>>
 }

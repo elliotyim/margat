@@ -18,11 +18,6 @@ class MessageViewPagerFragment: Fragment() {
 
     private var mListener: OnMessageViewPagerFragmentInteractionListener? = null
 
-    private var mNum: Int = 0
-
-    private lateinit var mMessageViewPager: NonSwipeViewPager
-    private lateinit var mMessageViewPagerAdapter: MessageViewPagerAdapter
-
     interface OnMessageViewPagerFragmentInteractionListener {
         fun onMyMessageFragmentInteraction(item: NonSwipeViewPager)
     }
@@ -41,11 +36,6 @@ class MessageViewPagerFragment: Fragment() {
         mListener = null
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mNum = if (arguments != null) arguments!!.getInt("num") else 1
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,10 +46,8 @@ class MessageViewPagerFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mMessageViewPager = messageViewPager
-        mMessageViewPagerAdapter = MessageViewPagerAdapter(childFragmentManager, mListener as MainActivity)
-        mMessageViewPager.adapter = mMessageViewPagerAdapter
-        mListener!!.onMyMessageFragmentInteraction(mMessageViewPager)
+        messageViewPager.adapter = MessageViewPagerAdapter(childFragmentManager, mListener as MainActivity)
+        mListener!!.onMyMessageFragmentInteraction(messageViewPager)
     }
 
 }

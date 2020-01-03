@@ -29,13 +29,13 @@ class FindPasswordActivity : AppCompatActivity() {
                 email = emailInput.text.toString()
             }
 
-            checkNameAndEmailOf(member, RetrofitAPI().creater.create(MemberRequest::class.java))
+            checkNameAndEmailOf(member, RetrofitAPI.newInstance().getRetrofit().create(MemberRequest::class.java))
         }
     }
 
     private fun checkNameAndEmailOf(member: Member, memberRequest: MemberRequest) {
-        memberRequest.findMemberByNameAndEmail(member).enqueue(object: MyCallback<Array<Member>>() {
-            override fun onResponse(call: Call<Array<Member>>, response: Response<Array<Member>>) {
+        memberRequest.findMemberByNameAndEmail(member).enqueue(object: MyCallback<ArrayList<Member>>() {
+            override fun onResponse(call: Call<ArrayList<Member>>, response: Response<ArrayList<Member>>) {
                 if (response.code() == 200) {
                     if (response.body().isNullOrEmpty()) {
                         Toast.makeText(applicationContext,

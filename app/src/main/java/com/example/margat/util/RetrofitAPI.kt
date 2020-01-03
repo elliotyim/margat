@@ -10,25 +10,33 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class RetrofitAPI: WebConfig() {
+    
+    companion object {
+        private var instance: RetrofitAPI = RetrofitAPI()
+        fun newInstance(): RetrofitAPI = instance
+    }
+
+    fun getRetrofit(): Retrofit = retrofit
 
     private val gson: Gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
 
-    val creater: Retrofit = Retrofit.Builder()
+    private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl("${ipAddress}${portNo}")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(createOkHttpClient())
         .build()
 
     private fun createOkHttpClient(): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        builder.addInterceptor(interceptor)
-        builder.connectTimeout(5, TimeUnit.SECONDS)
-        builder.readTimeout(5, TimeUnit.SECONDS)
-
+        val interceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        val builder = OkHttpClient.Builder().apply{
+            addInterceptor(interceptor)
+            connectTimeout(5, TimeUnit.SECONDS)
+            readTimeout(5, TimeUnit.SECONDS)
+        }
         return builder.build()
     }
+
+
 }
