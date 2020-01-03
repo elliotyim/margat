@@ -7,7 +7,7 @@ import retrofit2.Response
 
 abstract class MyCallback<T : Any?> : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        Toast.makeText(App.MyApp.getAppContext(), "통신 오류!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(App.MyApp.context, "통신 오류!", Toast.LENGTH_SHORT).show()
     }
 
     abstract override fun onResponse(call: Call<T>, response: Response<T>)

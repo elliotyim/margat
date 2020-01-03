@@ -78,14 +78,14 @@ class PostingFragment : Fragment() {
     private fun setOnClickListenerToPostButton() {
         postButton.setOnClickListener {
             when {
-                postContent.text.toString().replace(" ", "") == "" -> {
-                    Toast.makeText(activity!!, "포스팅 내용을 입력해주세요!", Toast.LENGTH_SHORT).show()
-                }
                 mImageAdapter!!.getImageUrlList().size == 0 -> {
                     Toast.makeText(activity!!, "적어도 한 개 이상의 사진을 등록해주세요!", Toast.LENGTH_SHORT).show()
                 }
+                postContent.text.toString().replace(" ", "") == "" -> {
+                    Toast.makeText(activity!!, "포스팅 내용을 입력해주세요!", Toast.LENGTH_SHORT).show()
+                }
                 else -> {
-                    mPostController.writePostWith()
+                    mPostController.writePost()
                 }
             }
         }
@@ -111,12 +111,8 @@ class PostingFragment : Fragment() {
     }
 
     private fun setOnClickListenerToPrevNextImageButton() {
-        prevImageButton.setOnClickListener {
-            mViewPager.currentItem--
-        }
-        nextImageButton.setOnClickListener {
-            mViewPager.currentItem++
-        }
+        prevImageButton.setOnClickListener { mViewPager.currentItem-- }
+        nextImageButton.setOnClickListener { mViewPager.currentItem++ }
     }
 
     fun clearInputs() {

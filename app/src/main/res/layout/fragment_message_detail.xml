@@ -12,6 +12,7 @@
         android:layout_above="@+id/input"
         android:layout_weight="1"
         app:dateHeaderFormat="yyyy-MM-dd"
+        app:outcomingDefaultBubbleColor="@android:color/holo_purple"
         />
 
     <com.stfalcon.chatkit.messages.MessageInput

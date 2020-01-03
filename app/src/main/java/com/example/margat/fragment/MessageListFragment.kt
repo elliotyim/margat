@@ -2,47 +2,35 @@ package com.example.margat.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.margat.R
 import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.MyMessageRecyclerViewAdapter
-import com.example.margat.controller.MessageController
-import com.example.margat.model.MessageItem
-import com.example.margat.util.NonSwipeViewPager
+import com.example.margat.model.MyMessageItem
 import kotlinx.android.synthetic.main.fragment_message_list.*
 
 class MessageListFragment: Fragment() {
-    private var mListener: OnMessageListFragmentInteractionListener? = null
-    private var mList = ArrayList<MessageItem>()
-
-    private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
-    private lateinit var mMessageController: MessageController
-
     interface OnMessageListFragmentInteractionListener {
-        fun getMessageRecyclerViewAdapter(adapter: MyMessageRecyclerViewAdapter)
-        fun getMessageController(controller: MessageController)
-        fun onMessageListFragmentInteraction(item: MessageItem)
+        fun onMessageRecyclerViewAdapter(viewAdapter: MyMessageRecyclerViewAdapter)
+        fun onMessageListFragmentInteraction(messageItem: MyMessageItem.MessageItem)
         fun onAnotherInteraction(button: Button)
     }
+
+    private var mListener: OnMessageListFragmentInteractionListener? = null
+    private lateinit var mMessageListRecyclerViewAdapter: MyMessageRecyclerViewAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnMessageListFragmentInteractionListener) {
-            mListener = context as MainActivity?
+            mListener = context as MainActivity
 
-            mMessageListRecyclerViewAdapter = MyMessageRecyclerViewAdapter(mList, mListener!!)
-            mMessageController = MessageController(mListener as MainActivity, mList, mMessageListRecyclerViewAdapter)
-
-            mListener!!.getMessageRecyclerViewAdapter(mMessageListRecyclerViewAdapter)
-            mListener!!.getMessageController(mMessageController)
-
+            mMessageListRecyclerViewAdapter = MyMessageRecyclerViewAdapter(mListener!!)
+            mListener!!.onMessageRecyclerViewAdapter(mMessageListRecyclerViewAdapter)
 
         } else {
             throw RuntimeException("$context must implement OnListFragmentInteractionListener")
@@ -61,8 +49,7 @@ class MessageListFragment: Fragment() {
     ): View? {
 
         var view = inflater.inflate(R.layout.fragment_message_list, container, false)
-        var button = view.findViewById(R.id.temp_button_to_detail) as Button
-        mListener!!.onAnotherInteraction(button)
+        mListener!!.onAnotherInteraction(view.findViewById(R.id.temp_button_to_detail) as Button)
         return view
     }
 

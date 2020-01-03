@@ -8,6 +8,7 @@ import com.example.margat.activity.MainActivity
 import com.example.margat.adapter.UploadImagePagerAdapter
 import com.example.margat.fragment.PostingFragment
 import com.example.margat.request.PostingRequest
+import com.example.margat.util.App
 import com.example.margat.util.MyCallback
 import com.example.margat.util.RetrofitAPI
 import com.yalantis.ucrop.UCrop
@@ -21,7 +22,7 @@ import retrofit2.Response
 
 class PostController {
 
-    var mActivity: MainActivity
+    private var mActivity: MainActivity
     private lateinit var mPostingFragment: PostingFragment
     private lateinit var mImagePagerAdapter: UploadImagePagerAdapter
 
@@ -36,7 +37,7 @@ class PostController {
         this.mImagePagerAdapter = imagePagerAdapter
     }
 
-    fun writePostWith() {
+    fun writePost() {
         var imageList = ArrayList<MultipartBody.Part>()
         var imageUriList = mImagePagerAdapter.getImageUrlList()
 
@@ -48,9 +49,11 @@ class PostController {
         }
 
         var map = HashMap<String, RequestBody>()
-        var memberNo = mActivity.getSharedPreferences("loginUser", 0).getInt("no", 0)
+
+        var memberNo = App.MyApp.context.getSharedPreferences("loginUser", 0).getInt("no", 0)
         var postContentBody =
             RequestBody.create(MediaType.parse("text/plain"), mActivity.postContent.text.toString())
+
         map["memberNo"] = RequestBody.create(MediaType.parse("text/plain"), memberNo.toString())
         map["postContent"] = postContentBody
 
@@ -77,18 +80,22 @@ class PostController {
     }
 
     fun setImage(uri: Uri) {
-        mImagePagerAdapter.addItem(uri)
-        mImagePagerAdapter.notifyDataSetChanged()
-
-        mImagePagerAdapter.instantiateItem(mActivity.imagePager,0)
-        mActivity.blankPager.visibility = View.GONE
-        mActivity.imagePager.visibility = View.VISIBLE
+        with(mImagePagerAdapter) {
+            addItem(uri)
+            notifyDataSetChanged()
+            instantiateItem(mActivity.imagePager,0)
+        }
+        with (mActivity) {
+            blankPager.visibility = View.GONE
+            imagePager.visibility = View.VISIBLE
+        }
     }
 
     fun cropImage(newUri: Uri, destinationUri: Uri) {
-        if (mActivity.imagePager.background != null)
-            mActivity.imagePager.setBackgroundResource(0)
-        mActivity.imageButtonLayout.visibility = View.VISIBLE
+        with (mActivity) {
+            if (imagePager.background != null) imagePager.setBackgroundResource(0)
+            imageButtonLayout.visibility = View.VISIBLE
+        }
 
         UCrop.of(newUri, destinationUri)
             .withAspectRatio(1F, 1F)

@@ -26,7 +26,7 @@ class MyPhotoRecyclerAdapter: RecyclerView.Adapter<ViewHolder> {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Glide.with(App.MyApp.getAppContext())
+        Glide.with(App.MyApp.context)
             .load(photoItems[position].photoUri)
             .into(holder.photo)
 

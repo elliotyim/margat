@@ -9,11 +9,6 @@ import java.net.URISyntaxException
 class SocketController {
 
     private lateinit var mSocket: Socket
-    var mActivity: MainActivity
-
-    constructor(mainActivity: MainActivity) {
-        this.mActivity = mainActivity
-    }
 
     fun connectToServerSocket() {
         try {

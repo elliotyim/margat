@@ -4,21 +4,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
-import com.example.margat.activity.MainActivity
-import com.example.margat.fragment.FeedFragment
 import com.example.margat.fragment.MessageDetailFragment
 import com.example.margat.fragment.MessageListFragment
-import com.example.margat.fragment.ProfileFragment
-import com.example.margat.model.MessageItem
 
 class MessageViewPagerAdapter: FragmentStatePagerAdapter {
 
-    private var mActivity: MainActivity
-
     private var pageIndexes: ArrayList<Int> = ArrayList()
 
-    constructor(fm: FragmentManager, mActivity: MainActivity): super(fm) {
-        this.mActivity = mActivity
+    constructor(fm: FragmentManager): super(fm) {
         for (i in 0..1)
             pageIndexes.add(i)
     }

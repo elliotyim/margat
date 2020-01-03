@@ -32,8 +32,7 @@ import retrofit2.Response
 class ProfileFragment : Fragment() {
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MyPhotoRecyclerAdapter
-    private var mList = ArrayList<MyPhotoItem>()
-
+    private var photoItemList = ArrayList<MyPhotoItem>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,14 +61,14 @@ class ProfileFragment : Fragment() {
 
     private fun initialiseMyPhotoList() {
         mRecyclerView = myPhotosRecycler
-        mAdapter = MyPhotoRecyclerAdapter(mList)
+        mAdapter = MyPhotoRecyclerAdapter(photoItemList)
         mRecyclerView.adapter = mAdapter
 
         mRecyclerView.layoutManager = GridLayoutManager(this.context, 3)
     }
 
     private fun addItem(photoUri: String) {
-        mList.add(MyPhotoItem(photoUri))
+        photoItemList.add(MyPhotoItem(photoUri))
     }
 
     private fun setProfilePhotoBy(info: SharedPreferences) {
