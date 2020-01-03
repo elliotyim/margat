@@ -6,7 +6,8 @@ module.exports = {
       + 'profile_photo as messageUserPhotoItem,'
       + 'name as userName,'
       + 'cdt as receivedDate,'
-      + 'message_cont as messageContent'
+      + 'message_cont as messageContent,'
+      + 'is_read as isRead '
     let inner = () => { return sqlColumns }
     return inner;
   },
@@ -69,6 +70,20 @@ module.exports = {
             })
         }
 
+      })
+  },
+  getAllMessagesAt(req, res) {
+    let chatNo = req.params.chatNo;
+    mysqlDB.query(
+      'select ' + this.getBasicSqlColumns()() +
+        ' from messages ms' +
+        ' inner join members m on ms.mem_no = m.mem_no' +
+        ' where chat_no=?' +
+        ' order by cdt desc',
+      [chatNo],
+      (err, rows) => {
+        if (err) res.send(err)
+        else if (rows) res.send(rows)
       })
   }
   

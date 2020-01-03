@@ -6,4 +6,8 @@ router.get('/messages/list/:memNo', (req, res) => {
   messageService.getMessageList(req, res);
 });
 
+router.get('/messages/detail/:chatNo', (req, res) => {
+  messageService.getAllMessagesAt(req, res);
+});
+
 module.exports = router;
